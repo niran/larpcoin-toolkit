@@ -9,9 +9,9 @@ A larpcoin is a memecoin that you can play. To join the game, mint your player N
 
 ## Objectives
 
-The core objective of any larpcoin is to get as many people to play as possible. But beware, gamemaster: a larpcoin with growth as its only objective will never be fun enough to grow! The gamemaster's job is to start a game worth growing, and to make sure the players who join are well-equipped to make the game their own.
+The core objective of any larpcoin is to get as many people to play as possible. But beware, gamemaster: a larpcoin with growth as its only objective will never be fun enough to grow! The gamemaster's job is to start a game worth growing, and to make sure the players who join are well-equipped to make the game their own. When your work is done, the hope is that your players get as much joy from being promoted to gamemaster as you get from being promoted to player. 
 
-Great games benefit their players. The best games benefit the world around the game.
+Remember: great games benefit their players. The best games benefit the world around the game.
 
 ## Gameplay
 
@@ -47,7 +47,7 @@ For some larpcoins, it makes sense for players to choose their own faction. For 
 
 A typical memecoin creator mints the entire fixed supply to an account and puts the rest in a liquidity pool. (The creator usually keeps some of the initial supply, but that's lame.)
 
-A typical larpcoin gamemaster mints the entire fixed supply to an account. From there, they put a small portion in a liquidity pool and the rest in a slowlock. The larpcoin players will control the coins in the slowlock. The gamemaster keeps nothing.
+A typical larpcoin gamemaster mints the entire fixed supply to an account. From there, they half in a liquidity pool and half in a slowlock. The larpcoin players will control the coins in the slowlock. The gamemaster keeps nothing.
 
 ## The Slowlock
 
