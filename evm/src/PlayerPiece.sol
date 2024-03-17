@@ -7,6 +7,11 @@ import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+/**
+ * PlayerPiece is a nontransferable NFT that can be minted with the specified amount of ETH.
+ * Its parameters can be updated by the owner of the NFT contract, which is intended to be the
+ * LarpcoinGovernor.
+ */
 contract PlayerPiece is ERC721, EIP712, ERC721Votes, Ownable {
     struct PlayerRecord {
         uint256 id;
