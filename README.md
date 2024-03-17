@@ -71,7 +71,7 @@ Unlike typical NFTs, the player NFTs at the core of a larpcoin are non-transfera
 The gamemaster chooses how players will control the slowlock. The simplest options are:
 
 * **House of Players**: Active players make decisions. Each player's NFT gives them a vote until it expires. One person, one vote. By default, the House of Players can spend the larpcoins released from the slowlock.
-* **House of Future Players**: Decisions are made by players who hold larpcoins to use in the future. One larpcoin, one vote. (Future players should be active players, too!) By default, the House of Future Players can modify the slowlock, modify the player NFT, and control the initial liquidity of larpcoins.
+* **House of Future Players**: Decisions are made by players who hold larpcoins to use in the future. One larpcoin, one vote. (Future players should be active players, too!) By default, the House of Future Players can modify the slowlock, modify the player NFT, and generally everything except spending larpcoins.
 
 Both houses are represented by [Governor](https://docs.tally.xyz/knowledge-base/tally/governor-framework) contracts, and proposals are managed with [Tally](https://www.tally.xyz/). You should rename the houses to fit with the lore of your larpcoin!
 
@@ -89,17 +89,17 @@ Both houses are represented by [Governor](https://docs.tally.xyz/knowledge-base/
 
 ## TODO
 
-- [ ] Token distribution script
+- [x] Token distribution script
 - [ ] Basic Player NFT contract (one per account, nontransferable, editable)
 - [ ] Deploy Governor contracts for both houses
 - [ ] ERC721Votes-compatible Player NFT expiration
 - [ ] Slowlock contract
-- [ ] Goalposts contract for swapping incoming tokens for the larpcoin and depositing in slowlock
 - [ ] Uniswap single-sided inital liquidity
+- [ ] Goalposts contract for swapping incoming tokens for the larpcoin and depositing in slowlock
 - [ ] Basic next.js larpcoin landing page
 - [ ] Mint from landing page
 - [ ] Buy larpcoin from landing page
-- [ ] Admin: Tally goalposts' larpcoins UI
+- [ ] Admin: UI to accept larpcoins from goalposts
 - [ ] PvP: Specify which faction's goalposts to credit when minting
 - [ ] PvP: Sorting Hat contract for auto-assigning factions
 - [ ] Separate examples for PvP and PvE
