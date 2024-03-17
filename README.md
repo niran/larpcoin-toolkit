@@ -3,7 +3,9 @@ larpcoin-toolkit
 
 *Do you have what it takes to be a gamemaster?*
 
-A larpcoin is a memecoin that you can play. To join the game, mint your game piece NFT. To keep playing, mint a new game piece NFT when your current one expires. The larpcoin is the only currency accepted for game piece NFTs, so if you're going to keep playing, you can hold larpcoins for the future.
+A larpcoin is a memecoin with a game you can play. To join the game, mint your game piece NFT. To keep playing, mint a new game piece NFT when your current one expires. The larpcoin is the only currency accepted for game piece NFTs, so if you're going to keep playing, you can hold larpcoins for the future.
+
+Since memecoins themselves are already like a game, that means there are two ways you can play a larpcoin: play it like a memecoin that everyone already knows how to play, or go deeper and play the game within the game. 
 
 `larpcoin-toolkit` contains everything you need to start your own larpcoin. Time is of the essence, gamemaster. You must hurry up and start your game!
 
@@ -42,12 +44,13 @@ For some larpcoins, it makes sense for players to choose their own faction. For 
 * World of Warcraft (Races)
 * Civilization (Civilizations)
 * The Olympics (Nations)
+* [Crypto: The Game](https://www.cryptothegame.com/) (Tribes, battle royale)
 
 ## Distribution
 
 A typical memecoin creator mints the entire fixed supply to an account and puts the rest in a liquidity pool. (The creator usually keeps some of the initial supply, but that's lame.)
 
-A typical larpcoin gamemaster mints the entire fixed supply to an account. From there, they half in a liquidity pool and half in a slowlock. The larpcoin players will control the coins in the slowlock. The gamemaster keeps nothing.
+A typical larpcoin gamemaster mints the entire fixed supply to an account. From there, they put half in a liquidity pool and half in a slowlock. The larpcoin players will control the coins in the slowlock. The gamemaster keeps nothing, and never makes the first purchases from the liquidity pool.
 
 ## The Slowlock
 
@@ -70,14 +73,20 @@ Unlike typical NFTs, the game piece NFTs at the core of a larpcoin are non-trans
 
 The gamemaster chooses how players will control the slowlock. The simplest options are:
 
-* **House of Players**: Active players make decisions. Each player's NFT gives them a vote until it expires. One person, one vote. By default, the House of Players can spend the larpcoins released from the slowlock.
+* **House of Players**: Active players make decisions. Each game piece NFT gives them a vote until it expires. One person, one vote. By default, the House of Players can spend the larpcoins released from the slowlock.
 * **House of Future Players**: Decisions are made by players who hold larpcoins to use in the future. One larpcoin, one vote. (Future players should be active players, too!) By default, the House of Future Players can modify the slowlock, modify the game piece NFT, and generally everything except spending larpcoins.
 
-Both houses are represented by [Governor](https://docs.tally.xyz/knowledge-base/tally/governor-framework) contracts, and proposals are managed with [Tally](https://www.tally.xyz/). You should rename the houses to fit with the lore of your larpcoin!
+You should rename the houses to fit with the lore of your larpcoin!
+
+## Tools
+
+* [**Base**](https://www.base.org/): Larpcoins play well on Base because the fees are super low, it's easy to onboard new players, and it has access to [Coinbase Onchain Verifications](https://github.com/coinbase/verifications), which will make it easier for you to enforce one player, one vote.
+* [**Tally**](https://www.tally.xyz/): Tally is the tool larpcoin players use to make decisions together.
+* [**Governor**](https://docs.tally.xyz/knowledge-base/tally/governor-framework): Larpcoins are built with Governor contracts, which makes them compatible with Tally.
+* [**Uniswap**](https://uniswap.org/): Uniswap v3's [single-sided liquidity](https://support.uniswap.org/hc/en-us/articles/20902968738317-What-is-single-sided-liquidity) allows the larpcoin to provide its own initial liquidity without any ETH.
 
 ## FAQ
 
-* **Which chain should I launch my larpcoin on?** Base seems like the best choice. It's easy to onboard, and it has access to [Coinbase Onchain Verifications](https://github.com/coinbase/verifications), which will make it easier for you to enforce one player, one vote.
 * **Do larpcoins have a fixed supply?** Yes. The entire supply of a larpcoin is created on day one. The larpcoins spent by the House of Players aren't *new* tokens, they're tokens that have been freshly released from the slowlock.
 * **Since players are spending USD and ETH to mint their game piece NFTs, does the House of Players receive USD and ETH to spend?** No. The House of Players only receives larpcoins from the slowlock. USD and ETH from minting is always automatically swapped and deposited back in the slowlock.
 * **Does "one person, one vote" actually work onchain?** Not really! Someone can create a whole bunch of accounts, mint a bunch of game piece NFTs, and gain control of the House of Players. But it's not worth worrying about this until your players have proved that your larpcoin is worth playing. Once it is, there are a few ways you can make it more resilient:
@@ -90,12 +99,12 @@ Both houses are represented by [Governor](https://docs.tally.xyz/knowledge-base/
 ## TODO
 
 - [x] Token distribution script
-- [x] Basic game piece NFT contract (one per account, nontransferable, editable)
+- [x] Basic game piece NFT contract editable by owner
 - [ ] Deploy Governor contracts for both houses
-- [ ] ERC721Votes-compatible game piece NFT expiration
-- [ ] Slowlock contract
+- [ ] Update the game piece's ERC721Votes logic to count one vote per address, expire votes and lock voting NFTs
 - [ ] Uniswap single-sided inital liquidity
-- [ ] Goalposts contract for swapping incoming tokens for the larpcoin and depositing in slowlock
+- [ ] Goalposts contract for swapping incoming tokens for the larpcoin and depositing in recipient
+- [ ] Slowlock contract as Goalposts recipient
 - [ ] Basic next.js larpcoin landing page
 - [ ] Mint from landing page
 - [ ] Mint from Farcaster frame
