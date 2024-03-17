@@ -90,7 +90,7 @@ Both houses are represented by [Governor](https://docs.tally.xyz/knowledge-base/
 ## TODO
 
 - [x] Token distribution script
-- [ ] Basic Player NFT contract (one per account, nontransferable, editable)
+- [x] Basic Player NFT contract (one per account, nontransferable, editable)
 - [ ] Deploy Governor contracts for both houses
 - [ ] ERC721Votes-compatible Player NFT expiration
 - [ ] Slowlock contract
@@ -98,7 +98,9 @@ Both houses are represented by [Governor](https://docs.tally.xyz/knowledge-base/
 - [ ] Goalposts contract for swapping incoming tokens for the larpcoin and depositing in slowlock
 - [ ] Basic next.js larpcoin landing page
 - [ ] Mint from landing page
+- [ ] Mint from Farcaster frame
 - [ ] Buy larpcoin from landing page
+- [ ] Buy larpcoin from Farcaster frame
 - [ ] Admin: UI to accept larpcoins from goalposts
 - [ ] PvP: Specify which faction's goalposts to credit when minting
 - [ ] PvP: Sorting Hat contract for auto-assigning factions
