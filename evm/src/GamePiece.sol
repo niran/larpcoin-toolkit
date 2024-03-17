@@ -8,11 +8,11 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
- * PlayerPiece is a nontransferable NFT that can be minted with the specified amount of ETH.
+ * GamePiece is a nontransferable NFT that can be minted with the specified amount of ETH.
  * Its parameters can be updated by the owner of the NFT contract, which is intended to be the
  * LarpcoinGovernor.
  */
-contract PlayerPiece is ERC721, EIP712, ERC721Votes, Ownable {
+contract GamePiece is ERC721, EIP712, ERC721Votes, Ownable {
     struct PlayerRecord {
         uint256 id;
     }
@@ -26,9 +26,9 @@ contract PlayerPiece is ERC721, EIP712, ERC721Votes, Ownable {
     uint256 _nextPlayerId;
     mapping(address player => PlayerRecord) _playerRecords;
 
-    error PlayerPieceIncorrectMintPayment(uint256 expectedPayment, uint256 actualPayment);
-    error PlayerPieceAlreadyMinted(address minter, PlayerRecord record);
-    error PlayerPieceTransfersProhibited(address from, address to);
+    error GamePieceIncorrectMintPayment(uint256 expectedPayment, uint256 actualPayment);
+    error GamePieceAlreadyMinted(address minter, PlayerRecord record);
+    error GamePieceTransfersProhibited(address from, address to);
     
     constructor(string memory name_, string memory symbol_, uint256 cost_, string memory tokenURI_, address initialOwner)
         ERC721(name_, symbol_)
@@ -52,7 +52,7 @@ contract PlayerPiece is ERC721, EIP712, ERC721Votes, Ownable {
 
     function mint() public payable {
         if (msg.value != _cost) {
-            revert PlayerPieceIncorrectMintPayment(_cost, msg.value);
+            revert GamePieceIncorrectMintPayment(_cost, msg.value);
         }
 
         _mintTo(msg.sender);
@@ -64,7 +64,7 @@ contract PlayerPiece is ERC721, EIP712, ERC721Votes, Ownable {
 
     function _mintTo(address to) internal {
         if (balanceOf(to) != 0) {
-            revert PlayerPieceAlreadyMinted(to, _playerRecords[to]);
+            revert GamePieceAlreadyMinted(to, _playerRecords[to]);
         }
 
         PlayerRecord storage record = _playerRecords[to];
@@ -82,7 +82,7 @@ contract PlayerPiece is ERC721, EIP712, ERC721Votes, Ownable {
     {
         address from = _ownerOf(tokenId);
         if (from != address(0) && to != address(0)) {
-            revert PlayerPieceTransfersProhibited(from, to);
+            revert GamePieceTransfersProhibited(from, to);
         }
         
         return super._update(to, tokenId, auth);

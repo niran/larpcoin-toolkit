@@ -6,9 +6,9 @@ import {Script, console} from "forge-std/Script.sol";
 import "@openzeppelin/contracts/governance/TimelockController.sol";
 
 import {Larpcoin} from "../src/Larpcoin.sol";
-import {PlayerPiece} from "../src/PlayerPiece.sol";
+import {GamePiece} from "../src/GamePiece.sol";
 import {LarpcoinGovernor} from "../src/LarpcoinGovernor.sol";
-import {PlayerGovernor} from "../src/PlayerGovernor.sol";
+import {GamePieceGovernor} from "../src/GamePieceGovernor.sol";
 
 
 contract LarpcoinSetup is Script {
@@ -22,14 +22,14 @@ contract LarpcoinSetup is Script {
         vm.startBroadcast();
         (, address msgSender,) = vm.readCallers();
         Larpcoin larpcoin = new Larpcoin(name, symbol, totalSupply);
-        PlayerPiece piece = new PlayerPiece("PlayerPiece", "LPP", 0.001 ether, "http://example.com", msgSender);
+        GamePiece piece = new GamePiece("GamePiece", "LGP", 0.001 ether, "http://example.com", msgSender);
         address[] memory openRole = new address[](1);
         openRole[0] = address(0);
         
         TimelockController houseOfPlayers = new TimelockController(7200 /* 1 day */, new address[](0), openRole, msgSender);
-        PlayerGovernor playerGovernor = new PlayerGovernor(piece, houseOfPlayers);
-        houseOfPlayers.grantRole(houseOfPlayers.PROPOSER_ROLE(), address(playerGovernor));
-        houseOfPlayers.grantRole(houseOfPlayers.CANCELLER_ROLE(), address(playerGovernor));
+        GamePieceGovernor GamePieceGovernor = new GamePieceGovernor(piece, houseOfPlayers);
+        houseOfPlayers.grantRole(houseOfPlayers.PROPOSER_ROLE(), address(GamePieceGovernor));
+        houseOfPlayers.grantRole(houseOfPlayers.CANCELLER_ROLE(), address(GamePieceGovernor));
         houseOfPlayers.revokeRole(houseOfPlayers.DEFAULT_ADMIN_ROLE(), msgSender);
 
         TimelockController houseOfFuturePlayers = new TimelockController(7200 /* 1 day */, new address[](0), openRole, msgSender);

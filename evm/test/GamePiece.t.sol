@@ -2,15 +2,15 @@
 pragma solidity ^0.8.18;
 
 import {Test, console} from "forge-std/Test.sol";
-import {PlayerPiece} from "../src/PlayerPiece.sol";
+import {GamePiece} from "../src/GamePiece.sol";
 
-contract PlayerPieceTest is Test {
-    PlayerPiece public piece;
+contract GamePieceTest is Test {
+    GamePiece public piece;
     address public owner;
 
     function setUp() public {
         owner = address(bytes20(hex"10000000"));
-        piece = new PlayerPiece("PlayerPiece", "LPP", 0.001 ether, "http://example.com", owner);
+        piece = new GamePiece("GamePiece", "LGP", 0.001 ether, "http://example.com", owner);
     }
 
     function testMint() public {

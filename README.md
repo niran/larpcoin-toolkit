@@ -3,7 +3,7 @@ larpcoin-toolkit
 
 *Do you have what it takes to be a gamemaster?*
 
-A larpcoin is a memecoin that you can play. To join the game, mint your player NFT. To keep playing, mint a new player NFT when your current one expires. The larpcoin is the only currency accepted for player NFTs, so if you're going to keep playing, you can hold larpcoins for the future.
+A larpcoin is a memecoin that you can play. To join the game, mint your game piece NFT. To keep playing, mint a new game piece NFT when your current one expires. The larpcoin is the only currency accepted for game piece NFTs, so if you're going to keep playing, you can hold larpcoins for the future.
 
 `larpcoin-toolkit` contains everything you need to start your own larpcoin. Time is of the essence, gamemaster. You must hurry up and start your game!
 
@@ -62,16 +62,16 @@ The ideal configuration for a slowlock is not yet understood, but here are some 
 
 ## Minting
 
-The gamemaster sets an initial USD or ETH denominated price for the player NFT and a time period for expiration. Users pay with the currency they have. Behind the scenes, that currency is automatically swapped for larpcoins. The larpcoins are deposited in the slowlock, where they will be slowly released over time for the players to control together.
+The gamemaster sets an initial USD or ETH denominated price for the game piece NFT and a time period for expiration. Users pay with the currency they have. Behind the scenes, that currency is automatically swapped for larpcoins. The larpcoins are deposited in the slowlock, where they will be slowly released over time for the players to control together.
 
-Unlike typical NFTs, the player NFTs at the core of a larpcoin are non-transferable and time-limited. However, players are encouraged to create more traditional NFTs that can also be minted using the larpcoin.
+Unlike typical NFTs, the game piece NFTs at the core of a larpcoin are non-transferable and time-limited. However, players are encouraged to create more traditional NFTs that can also be minted using the larpcoin.
 
 ## Player Control
 
 The gamemaster chooses how players will control the slowlock. The simplest options are:
 
 * **House of Players**: Active players make decisions. Each player's NFT gives them a vote until it expires. One person, one vote. By default, the House of Players can spend the larpcoins released from the slowlock.
-* **House of Future Players**: Decisions are made by players who hold larpcoins to use in the future. One larpcoin, one vote. (Future players should be active players, too!) By default, the House of Future Players can modify the slowlock, modify the player NFT, and generally everything except spending larpcoins.
+* **House of Future Players**: Decisions are made by players who hold larpcoins to use in the future. One larpcoin, one vote. (Future players should be active players, too!) By default, the House of Future Players can modify the slowlock, modify the game piece NFT, and generally everything except spending larpcoins.
 
 Both houses are represented by [Governor](https://docs.tally.xyz/knowledge-base/tally/governor-framework) contracts, and proposals are managed with [Tally](https://www.tally.xyz/). You should rename the houses to fit with the lore of your larpcoin!
 
@@ -79,8 +79,8 @@ Both houses are represented by [Governor](https://docs.tally.xyz/knowledge-base/
 
 * **Which chain should I launch my larpcoin on?** Base seems like the best choice. It's easy to onboard, and it has access to [Coinbase Onchain Verifications](https://github.com/coinbase/verifications), which will make it easier for you to enforce one player, one vote.
 * **Do larpcoins have a fixed supply?** Yes. The entire supply of a larpcoin is created on day one. The larpcoins spent by the House of Players aren't *new* tokens, they're tokens that have been freshly released from the slowlock.
-* **Since players are spending USD and ETH to mint their player NFTs, does the House of Players receive USD and ETH to spend?** No. The House of Players only receives larpcoins from the slowlock. USD and ETH from minting is always automatically swapped and deposited back in the slowlock.
-* **Does "one person, one vote" actually work onchain?** Not really! Someone can create a whole bunch of accounts, mint a bunch of player NFTs, and gain control of the House of Players. But it's not worth worrying about this until your players have proved that your larpcoin is worth playing. Once it is, there are a few ways you can make it more resilient:
+* **Since players are spending USD and ETH to mint their game piece NFTs, does the House of Players receive USD and ETH to spend?** No. The House of Players only receives larpcoins from the slowlock. USD and ETH from minting is always automatically swapped and deposited back in the slowlock.
+* **Does "one person, one vote" actually work onchain?** Not really! Someone can create a whole bunch of accounts, mint a bunch of game piece NFTs, and gain control of the House of Players. But it's not worth worrying about this until your players have proved that your larpcoin is worth playing. Once it is, there are a few ways you can make it more resilient:
     * Require [Coinbase Onchain Verifications](https://github.com/coinbase/verifications) to vote in the House of Players.
     * Transition from automatic membership rolls to manual ones that are updated periodically by the House of Players.
     * Spend larpcoins as quickly as possible in the House of Players. The fewer that accumulate, the less lucrative it is to attack.
@@ -90,9 +90,9 @@ Both houses are represented by [Governor](https://docs.tally.xyz/knowledge-base/
 ## TODO
 
 - [x] Token distribution script
-- [x] Basic Player NFT contract (one per account, nontransferable, editable)
+- [x] Basic game piece NFT contract (one per account, nontransferable, editable)
 - [ ] Deploy Governor contracts for both houses
-- [ ] ERC721Votes-compatible Player NFT expiration
+- [ ] ERC721Votes-compatible game piece NFT expiration
 - [ ] Slowlock contract
 - [ ] Uniswap single-sided inital liquidity
 - [ ] Goalposts contract for swapping incoming tokens for the larpcoin and depositing in slowlock
