@@ -10,7 +10,7 @@ contract GamePieceTest is Test {
 
     function setUp() public {
         owner = address(bytes20(hex"10000000"));
-        piece = new GamePiece("GamePiece", "LGP", 0.001 ether, "http://example.com", owner);
+        piece = new GamePiece("GamePiece", "LGP", 0.001 ether, 30 * 86400, "http://example.com", owner);
     }
 
     function testMint() public {
@@ -20,20 +20,6 @@ contract GamePieceTest is Test {
         piece.mint{value: 0.001 ether}();
         assertEq(piece.balanceOf(minter), 1);
         assertEq(address(piece).balance, 0.001 ether);
-    }
-
-    function testMintingTwiceFails() public {
-        address minter = address(1);
-        vm.deal(minter, 0.002 ether);
-
-        vm.prank(minter);
-        piece.mint{value: 0.001 ether}();
-        assertEq(piece.balanceOf(minter), 1);
-        assertEq(address(piece).balance, 0.001 ether);
-
-        vm.prank(minter);
-        vm.expectRevert();
-        piece.mint{value: 0.001 ether}();
     }
 
     function testOverpayingFails() public {

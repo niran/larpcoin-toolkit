@@ -30,6 +30,7 @@ contract LarpcoinFactoryTest is Test {
             name: "GamePiece",
             symbol: "LGP",
             cost: 0.001 ether,
+            roundLength: 30 * 86400,
             tokenURI: "http://example.com"
         });
         return factory.build(lcArgs, gpArgs, 86400 /* 1 day */);

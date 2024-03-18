@@ -25,6 +25,7 @@ contract LarpcoinSetup is Script {
             name: "GamePiece",
             symbol: "LGP",
             cost: 0.001e18,
+            roundLength: 30 * 86400,
             tokenURI: "http://example.com"
         });
 

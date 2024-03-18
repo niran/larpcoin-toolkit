@@ -28,6 +28,7 @@ struct GamePieceArgs {
     string name;
     string symbol;
     uint256 cost;
+    uint256 roundLength;
     string tokenURI;
 }
 
@@ -46,7 +47,7 @@ contract LarpcoinFactory {
         c.larpcoin = new Larpcoin(lcArgs.name, lcArgs.symbol, lcArgs.totalSupply);
         // TODO: Transfer to Uniswap and the Slowlock instead of specifying a supply owner.
         c.larpcoin.transfer(address(lcArgs.supplyOwner), lcArgs.totalSupply);
-        c.piece = new GamePiece(gpArgs.name, gpArgs.symbol, gpArgs.cost, gpArgs.tokenURI, address(this));
+        c.piece = new GamePiece(gpArgs.name, gpArgs.symbol, gpArgs.cost, gpArgs.roundLength, gpArgs.tokenURI, address(this));
         
         c.gpHouse = new TimelockController(timelockDelay, new address[](0), openRole(), address(this));
         c.gpGov = new GamePieceGovernor(c.piece, c.gpHouse);
