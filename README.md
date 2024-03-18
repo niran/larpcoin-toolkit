@@ -84,7 +84,7 @@ You should rename the houses to fit with the lore of your larpcoin!
 * [**Tally**](https://www.tally.xyz/): Tally is the tool larpcoin players use to make decisions together.
 * [**Governor**](https://docs.tally.xyz/knowledge-base/tally/governor-framework): Larpcoins are built with Governor contracts, which makes them compatible with Tally.
 * [**Uniswap**](https://uniswap.org/): Uniswap v3's [single-sided liquidity](https://support.uniswap.org/hc/en-us/articles/20902968738317-What-is-single-sided-liquidity) allows the larpcoin to provide its own initial liquidity without any ETH.
-* [**Party**](https://www.party.app/): If you use Party to launch your larpcoin, you can avoid some of the pitfalls of typical memecoins. The early participants often end up with a huge portion of the token supply, which makes the whole game very ruggable. If you [split the early token supply with several people](https://twitter.com/john_c_palmer/status/1769179600502833569), your larpcoin might be less ruggable.
+* [**Party**](https://www.party.app/): If you use Party to launch your larpcoin, you can avoid some of the pitfalls of typical memecoins. The early participants often end up with a huge portion of the token supply, which makes the whole game very ruggable. If you "fair launch" your larpcoin by [splitting the early token supply with several people](https://twitter.com/john_c_palmer/status/1769179600502833569), it might be less ruggable.
 
 ## FAQ
 
