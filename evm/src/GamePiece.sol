@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/governance/utils/Votes.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+
 struct PlayerRecord {    
     // The first time the player registered to vote. Never changes.
     uint256 firstTime;
@@ -85,7 +86,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         _safeMint(to, totalSupply() + 1);
     }
 
-    function minimumVotingBalance(address player) public returns (uint256) {
+    function minimumVotingBalance(address player) public view returns (uint256) {
         uint256 elapsedRounds = (block.timestamp - playerRecords[player].activationTime) / _roundLength;
         return elapsedRounds + playerRecords[player].activationBalance + 1;
     }
@@ -100,7 +101,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         // without restriction.
         address from = _ownerOf(tokenId);
         bool fromPlayer = playerRecords[from].firstTime != 0;
-        if (fromPlayer && balanceOf(from) < minimumVotingBalance(from)) {
+        if (fromPlayer && balanceOf(from) <= minimumVotingBalance(from)) {
             revert GamePieceBelowMinimumVotingBalance(from, minimumVotingBalance(from));
         }
 
@@ -133,7 +134,15 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
             record.firstTime = block.timestamp;
             record.activationTime = block.timestamp;
             record.activationBalance = 0;
-            record.isActive = balanceOf(account) > 0;
+            if (balanceOf(account) > 0) {
+                // Mint a new voting unit to the total supply of voting units since we're adding a
+                // new voter. `super._delegate()` adds a voting unit for the player, but doesn't add
+                // one to the total supply checkpoint.
+                _transferVotingUnits(address(0), account, 1);
+                record.isActive = true;
+            } else {
+                record.isActive = false;
+            }
             emit PlayerRegistered(account);
         }
 
@@ -149,11 +158,11 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
     function expirePlayers(address[] calldata accounts) public {
         for (uint256 i = 0; i < accounts.length; i++) {
             address account = accounts[i];
-            PlayerRecord storage record = playerRecords[account];
-            if (!record.isActive) {
+            if (getVotes(account) == 0) {
                 continue;
             }
 
+            PlayerRecord storage record = playerRecords[account];
             uint256 expected = minimumVotingBalance(account);
             uint256 actual = balanceOf(account);
             if (expected > actual) {

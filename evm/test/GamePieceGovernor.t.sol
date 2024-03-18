@@ -8,11 +8,10 @@ import "@openzeppelin/contracts/governance/TimelockController.sol";
 import "../src/LarpcoinFactory.sol";
 import {Larpcoin} from "../src/Larpcoin.sol";
 import {GamePiece} from "../src/GamePiece.sol";
-import {LarpcoinGovernor} from "../src/LarpcoinGovernor.sol";
 import {GamePieceGovernor} from "../src/GamePieceGovernor.sol";
 
 
-contract LarpcoinGovernorTest is Test {
+contract GamePieceGovernorTest is Test {
     LarpcoinFactory public factory;
 
     function setUp() public {
@@ -36,16 +35,21 @@ contract LarpcoinGovernorTest is Test {
         return factory.build(lcArgs, gpArgs, 86400 /* 1 day */);
     }
 
-    function executeViaLCGov(LarpcoinContracts memory c, address target, uint256 value, bytes memory data, string memory description) internal {
-        address proposer = address(1);
-        c.larpcoin.transfer(proposer, 1000e18);
-        vm.prank(proposer);
-        c.larpcoin.delegate(proposer);
+    function mintAndDelegate(address account, GamePiece piece) internal {
+        vm.deal(account, 0.001 ether);
+        vm.prank(account);
+        piece.mint{value: 0.001 ether}();
+        vm.prank(account);
+        piece.delegate(account);
+    }
 
-        address quorumVoter = address(2);
-        c.larpcoin.transfer(quorumVoter, 4000e18);
-        vm.prank(quorumVoter);
-        c.larpcoin.delegate(quorumVoter);
+    function executeViaGPGov(LarpcoinContracts memory c, address target, uint256 value, bytes memory data, string memory description) internal {
+        address proposer = address(1);
+        address[4] memory voters = [address(2), address(3), address(4), address(5)];
+        mintAndDelegate(proposer, c.piece);
+        for (uint256 i = 0; i < voters.length; i++) {
+            mintAndDelegate(voters[i], c.piece);
+        }
         
         // Delegation takes effect on the next block.
         vm.roll(block.number + 1);
@@ -57,27 +61,31 @@ contract LarpcoinGovernorTest is Test {
         bytes[] memory calldatas = new bytes[](1);
         calldatas[0] = data;
         vm.prank(proposer);
-        uint256 proposalId = c.lcGov.propose(targets, values, calldatas, description);
+        uint256 proposalId = c.gpGov.propose(targets, values, calldatas, description);
 
         // Advance blocks to the voting period.
         vm.roll(block.number + 7200 + 1);
         vm.prank(proposer);
-        c.lcGov.castVote(proposalId, 1);
-        vm.prank(quorumVoter);
-        c.lcGov.castVote(proposalId, 1);
+        c.gpGov.castVote(proposalId, 1);
+        for (uint256 i = 0; i < voters.length; i++) {
+            vm.prank(voters[i]);
+            c.gpGov.castVote(proposalId, 1);
+        }
 
         // Advance blocks past the end of the voting period.
         vm.roll(block.number + 50400 + 1);
-        c.lcGov.queue(targets, values, calldatas, keccak256(bytes(description)));
+        c.gpGov.queue(targets, values, calldatas, keccak256(bytes(description)));
 
         // Advance seconds past the timelock delay.
         vm.warp(block.timestamp + 86400 + 1);
-        c.lcGov.execute(targets, values, calldatas, keccak256(bytes(description)));
+        c.gpGov.execute(targets, values, calldatas, keccak256(bytes(description)));
     }
 
-    function testLCGovCanPassProposals() public {
+    function testGPGovCanPassProposals() public {
         LarpcoinContracts memory c = buildContracts();
-        executeViaLCGov(c, address(c.piece), 0, abi.encodeCall(c.piece.setName, ("NEWNAME")), "Change the name of the GamePiece to NEWNAME");
-        assertEq(c.piece.name(), "NEWNAME");
+        c.larpcoin.transfer(address(c.gpHouse), 500_000_000e18);
+        address dest = address(1);
+        executeViaGPGov(c, address(c.larpcoin), 0, abi.encodeCall(c.larpcoin.transfer, (dest, 100_000_000e18)), "Send larpcoins to destination");
+        assertEq(c.larpcoin.balanceOf(dest), 100_000_000e18);
     }
 }

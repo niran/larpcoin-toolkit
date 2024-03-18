@@ -40,7 +40,7 @@ contract GamePieceTest is Test {
         piece.mint{value: 1 gwei}();
     }
 
-    function testTransfersProhibited() public {
+    function testUnregisteredMinterCanTransfer() public {
         address minter = address(1);
         vm.deal(minter, 0.001 ether);
         vm.prank(minter);
@@ -50,8 +50,9 @@ contract GamePieceTest is Test {
 
         address recipient = address(2);
         vm.prank(minter);
-        vm.expectRevert();
         piece.transferFrom(minter, recipient, 1);
+        assertEq(piece.balanceOf(minter), 0);
+        assertEq(piece.balanceOf(recipient), 1);
     }
 
     function testOwnerCanMintToAnyone() public {
@@ -130,5 +131,166 @@ contract GamePieceTest is Test {
         vm.prank(hacker);
         vm.expectRevert();
         piece.setCost(1 ether);
+    }
+
+    function testMinterCanRegister() public {
+        address minter = address(1);
+        vm.deal(minter, 0.001 ether);
+        vm.startPrank(minter);
+        piece.mint{value: 0.001 ether}();
+        piece.delegate(minter);
+        vm.stopPrank();
+
+        assertEq(piece.getVotes(minter), 1);
+    }
+
+    function testMinterCanRegisterBeforeMinting() public {
+        address minter = address(1);
+        vm.deal(minter, 0.001 ether);
+        vm.prank(minter);
+        piece.delegate(minter);
+        assertEq(piece.getVotes(minter), 0);
+
+        vm.prank(minter);
+        piece.mint{value: 0.001 ether}();
+        assertEq(piece.getVotes(minter), 1);
+    }
+
+    function testPlayerCantTransferActivePiece() public {
+        address minter = address(1);
+        address recipient = address(2);
+        vm.deal(minter, 0.001 ether);
+        vm.startPrank(minter);
+        piece.mint{value: 0.001 ether}();
+        piece.delegate(minter);
+        vm.expectRevert();
+        piece.transferFrom(minter, recipient, 1);
+        vm.stopPrank();
+    }
+
+    function testPlayerCanTransferSurplusPiece() public {
+        address minter = address(1);
+        address recipient = address(2);
+        vm.deal(minter, 0.002 ether);
+        vm.startPrank(minter);
+        piece.mint{value: 0.001 ether}();
+        piece.mint{value: 0.001 ether}();
+        piece.delegate(minter);
+        piece.transferFrom(minter, recipient, 1);
+        vm.stopPrank();
+
+        assertEq(piece.getVotes(minter), 1);
+        assertEq(piece.balanceOf(minter), 1);
+        assertEq(piece.balanceOf(recipient), 1);
+    }
+
+    function testMinterOnlyGetsOneVote() public {
+        address minter = address(1);
+        vm.deal(minter, 0.005 ether);
+        vm.startPrank(minter);
+        piece.mint{value: 0.001 ether}();
+        piece.mint{value: 0.001 ether}();
+        piece.mint{value: 0.001 ether}();
+        piece.mint{value: 0.001 ether}();
+        piece.mint{value: 0.001 ether}();
+        piece.delegate(minter);
+        vm.stopPrank();
+
+        assertEq(piece.getVotes(minter), 1);
+        assertEq(piece.balanceOf(minter), 5);
+    }
+
+    function testPlayerExpiresAfterRound() public {
+        address minter = address(1);
+        vm.deal(minter, 0.001 ether);
+        vm.startPrank(minter);
+        piece.mint{value: 0.001 ether}();
+        piece.delegate(minter);
+        vm.stopPrank();
+
+        vm.warp(block.timestamp + 30 * 86400);
+        address[] memory accounts = new address[](1);
+        accounts[0] = minter;
+        piece.expirePlayers(accounts);
+        assertEq(piece.getVotes(minter), 0);
+    }
+
+    function testPlayerDoesntExpireAfterRoundIfTheyMint() public {
+        address minter = address(1);
+        vm.deal(minter, 0.002 ether);
+        vm.startPrank(minter);
+        piece.mint{value: 0.001 ether}();
+        piece.delegate(minter);
+        vm.warp(block.timestamp + 30 * 86400);
+        piece.mint{value: 0.001 ether}();
+        vm.stopPrank();
+
+        address[] memory accounts = new address[](1);
+        accounts[0] = minter;
+        piece.expirePlayers(accounts);
+        assertEq(piece.getVotes(minter), 1);
+    }
+
+    function testExpiredPlayerReactivates() public {
+        address minter = address(1);
+        vm.deal(minter, 0.002 ether);
+        vm.startPrank(minter);
+        piece.mint{value: 0.001 ether}();
+        piece.delegate(minter);
+        vm.stopPrank();
+
+        vm.warp(block.timestamp + 30 * 86400);
+        address[] memory accounts = new address[](1);
+        accounts[0] = minter;
+        piece.expirePlayers(accounts);
+        assertEq(piece.getVotes(minter), 0);
+
+        vm.prank(minter);
+        piece.mint{value: 0.001 ether}();
+        assertEq(piece.getVotes(minter), 1);
+    }
+
+    function testExpiredPlayerReactivatesAfterLongAbsence() public {
+        address minter = address(1);
+        vm.deal(minter, 0.002 ether);
+        vm.startPrank(minter);
+        piece.mint{value: 0.001 ether}();
+        piece.delegate(minter);
+        vm.stopPrank();
+
+        vm.warp(block.timestamp + 30 * 86400);
+        address[] memory accounts = new address[](1);
+        accounts[0] = minter;
+        piece.expirePlayers(accounts);
+        assertEq(piece.getVotes(minter), 0);
+
+        vm.warp(block.timestamp + 30 * 86400 * 12);
+        vm.prank(minter);
+        piece.mint{value: 0.001 ether}();
+        assertEq(piece.getVotes(minter), 1);
+    }
+
+    function testReactivationExpires() public {
+        address minter = address(1);
+        vm.deal(minter, 0.002 ether);
+        vm.startPrank(minter);
+        piece.mint{value: 0.001 ether}();
+        piece.delegate(minter);
+        vm.stopPrank();
+
+        vm.warp(block.timestamp + 30 * 86400);
+        address[] memory accounts = new address[](1);
+        accounts[0] = minter;
+        piece.expirePlayers(accounts);
+        assertEq(piece.getVotes(minter), 0);
+
+        vm.warp(block.timestamp + 30 * 86400 * 12);
+        vm.prank(minter);
+        piece.mint{value: 0.001 ether}();
+        assertEq(piece.getVotes(minter), 1);
+
+        vm.warp(block.timestamp + 30 * 86400);
+        piece.expirePlayers(accounts);
+        assertEq(piece.getVotes(minter), 0);
     }
 }
