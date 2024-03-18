@@ -60,8 +60,8 @@ The half-life determines the effective larpcoin inflation rate at each level of 
 
 The ideal configuration for a slowlock is not yet understood, but here are some easy options:
 
-* **Six months**: If your larpcoin hasn't taken off in six months, it's probably dead already.
 * **Four years**: Bitcoin's half life is four years. If it's good enough for Bitcoin, maybe it's good enough for your larpcoin?
+* **One year**: In most memecoins, the 50% of the supply devoted to liquidity usually circulates very quickly with a small portion remaining in Uniswap. With a half life of one year, it'll take a year for the slowlock to dilute that by half (25% of the total supply). Maybe that's conservative enough.
 
 ## Minting
 
