@@ -8,31 +8,60 @@ import {GamePiece} from "./GamePiece.sol";
 import {LarpcoinGovernor} from "./LarpcoinGovernor.sol";
 import {GamePieceGovernor} from "./GamePieceGovernor.sol";
 
+struct LarpcoinContracts {
+    GamePiece piece;
+    Larpcoin larpcoin;
+    TimelockController gpHouse;
+    GamePieceGovernor gpGov;
+    TimelockController lcHouse;
+    LarpcoinGovernor lcGov;
+}
+
+struct LarpcoinArgs{
+    string name;
+    string symbol;
+    uint208 totalSupply;
+    address supplyOwner;
+}
+
+struct GamePieceArgs {
+    string name;
+    string symbol;
+    uint256 cost;
+    string tokenURI;
+}
 
 contract LarpcoinFactory {
-    function build(string memory larpcoinName, string memory larpcoinSymbol, uint208 totalSupply,
-        string memory pieceName, string memory pieceSymbol, uint256 pieceCost, string memory  pieceTokenURI,
-        uint256 timelockDelay)
+    function openRole() internal pure returns (address[] memory) {
+        address[] memory role = new address[](1);
+        role[0] = address(0);
+        return role;
+    }
+
+    function build(LarpcoinArgs memory lcArgs, GamePieceArgs memory gpArgs, uint256 timelockDelay)
         public
-        returns (GamePiece, Larpcoin, TimelockController, TimelockController, GamePieceGovernor, LarpcoinGovernor)
+        returns (LarpcoinContracts memory)
     {
-        Larpcoin larpcoin = new Larpcoin(larpcoinName, larpcoinSymbol, totalSupply);
-        GamePiece piece = new GamePiece(pieceName, pieceSymbol, pieceCost, pieceTokenURI, address(this));
-        address[] memory openRole = new address[](1);
-        openRole[0] = address(0);
+        LarpcoinContracts memory c;
+        c.larpcoin = new Larpcoin(lcArgs.name, lcArgs.symbol, lcArgs.totalSupply);
+        // TODO: Transfer to Uniswap and the Slowlock instead of specifying a supply owner.
+        c.larpcoin.transfer(address(lcArgs.supplyOwner), lcArgs.totalSupply);
+        c.piece = new GamePiece(gpArgs.name, gpArgs.symbol, gpArgs.cost, gpArgs.tokenURI, address(this));
         
-        TimelockController pHouse = new TimelockController(timelockDelay, new address[](0), openRole, address(this));
-        GamePieceGovernor GamePieceGovernor = new GamePieceGovernor(piece, pHouse);
-        pHouse.grantRole(pHouse.PROPOSER_ROLE(), address(GamePieceGovernor));
-        pHouse.grantRole(pHouse.CANCELLER_ROLE(), address(GamePieceGovernor));
-        pHouse.revokeRole(pHouse.DEFAULT_ADMIN_ROLE(), address(this));
+        c.gpHouse = new TimelockController(timelockDelay, new address[](0), openRole(), address(this));
+        c.gpGov = new GamePieceGovernor(c.piece, c.gpHouse);
+        c.gpHouse.grantRole(c.gpHouse.PROPOSER_ROLE(), address(c.gpGov));
+        c.gpHouse.grantRole(c.gpHouse.CANCELLER_ROLE(), address(c.gpGov));
+        c.gpHouse.revokeRole(c.gpHouse.DEFAULT_ADMIN_ROLE(), address(this));
 
-        TimelockController fpHouse = new TimelockController(timelockDelay, new address[](0), openRole, address(this));
-        LarpcoinGovernor larpcoinGovernor = new LarpcoinGovernor(larpcoin, fpHouse);
-        fpHouse.grantRole(fpHouse.PROPOSER_ROLE(), address(larpcoinGovernor));
-        fpHouse.grantRole(fpHouse.CANCELLER_ROLE(), address(larpcoinGovernor));
-        fpHouse.revokeRole(fpHouse.DEFAULT_ADMIN_ROLE(), address(this));
+        c.lcHouse = new TimelockController(timelockDelay, new address[](0), openRole(), address(this));
+        c.lcGov = new LarpcoinGovernor(c.larpcoin, c.lcHouse);
+        c.lcHouse.grantRole(c.lcHouse.PROPOSER_ROLE(), address(c.lcGov));
+        c.lcHouse.grantRole(c.lcHouse.CANCELLER_ROLE(), address(c.lcGov));
+        c.lcHouse.revokeRole(c.lcHouse.DEFAULT_ADMIN_ROLE(), address(this));
 
-        return (piece, larpcoin, pHouse, fpHouse, GamePieceGovernor, larpcoinGovernor);
+        c.piece.transferOwnership(address(c.lcHouse));
+
+        return c;
     }
 }

@@ -6,17 +6,19 @@ import "@openzeppelin/contracts/governance/Governor.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
-import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 
-contract LarpcoinGovernor is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl {
+contract LarpcoinGovernor is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorTimelockControl {
     constructor(IVotes _token, TimelockController _timelock)
         Governor("LarpcoinGovernor")
         GovernorSettings(7200 /* 1 day */, 50400 /* 1 week */, 1000e18)
         GovernorVotes(_token)
-        GovernorVotesQuorumFraction(4)
         GovernorTimelockControl(_timelock)
     {}
+
+    function quorum(uint256 blockNumber) public pure override returns (uint256) {
+        return 5000e18;
+    }
 
     // The following functions are overrides required by Solidity.
 
@@ -36,15 +38,6 @@ contract LarpcoinGovernor is Governor, GovernorSettings, GovernorCountingSimple,
         returns (uint256)
     {
         return super.votingPeriod();
-    }
-
-    function quorum(uint256 blockNumber)
-        public
-        view
-        override(Governor, GovernorVotesQuorumFraction)
-        returns (uint256)
-    {
-        return super.quorum(blockNumber);
     }
 
     function state(uint256 proposalId)

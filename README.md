@@ -100,7 +100,7 @@ You should rename the houses to fit with the lore of your larpcoin!
 
 - [x] Token distribution script
 - [x] Basic game piece NFT contract editable by owner
-- [ ] Deploy Governor contracts for both houses
+- [x] Deploy Governor contracts for both houses
 - [ ] Update the game piece's ERC721Votes logic to count one vote per address, expire votes and lock voting NFTs
 - [ ] Uniswap single-sided inital liquidity
 - [ ] Goalposts contract for swapping incoming tokens for the larpcoin and depositing in recipient
