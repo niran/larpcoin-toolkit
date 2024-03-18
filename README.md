@@ -3,7 +3,7 @@ larpcoin-toolkit
 
 *Do you have what it takes to be a gamemaster?*
 
-A larpcoin is a memecoin with a game you can play. To join the game, mint your game piece NFT, to play for one round. To keep playing, mint a new game piece NFT each round. The larpcoin is the only currency accepted for game piece NFTs, so if you're going to keep playing, you can hold larpcoins for the future.
+A larpcoin is a memecoin with a game you can play. To join the game, mint your game piece NFT to play for one round. To keep playing, mint a new game piece NFT each round. The larpcoin is the only currency accepted for game piece NFTs, so if you're going to keep playing, you can hold larpcoins for the future.
 
 Since memecoins themselves are already like a game, that means there are two ways you can play a larpcoin: play it like a memecoin that everyone already knows how to play, or go deeper and play the game within the game. 
 
