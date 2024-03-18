@@ -3,7 +3,7 @@ larpcoin-toolkit
 
 *Do you have what it takes to be a gamemaster?*
 
-A larpcoin is a memecoin with a game you can play. To join the game, mint your game piece NFT. To keep playing, mint a new game piece NFT when your current one expires. The larpcoin is the only currency accepted for game piece NFTs, so if you're going to keep playing, you can hold larpcoins for the future.
+A larpcoin is a memecoin with a game you can play. To join the game, mint your game piece NFT, to play for one round. To keep playing, mint a new game piece NFT each round. The larpcoin is the only currency accepted for game piece NFTs, so if you're going to keep playing, you can hold larpcoins for the future.
 
 Since memecoins themselves are already like a game, that means there are two ways you can play a larpcoin: play it like a memecoin that everyone already knows how to play, or go deeper and play the game within the game. 
 
@@ -67,7 +67,7 @@ The ideal configuration for a slowlock is not yet understood, but here are some 
 
 The gamemaster sets an initial USD or ETH denominated price for the game piece NFT and a time period for expiration. Users pay with the currency they have. Behind the scenes, that currency is automatically swapped for larpcoins. The larpcoins are deposited in the slowlock, where they will be slowly released over time for the players to control together.
 
-Unlike typical NFTs, the game piece NFTs at the core of a larpcoin are non-transferable and time-limited. However, players are encouraged to create more traditional NFTs that can also be minted using the larpcoin.
+Game piece NFTs can be transferred without any restrictions until the player registers to vote with their game piece. After that, one game piece per round will be locked in the player's account, while the remaining can still be transferred.
 
 ## Player Control
 
@@ -84,6 +84,7 @@ You should rename the houses to fit with the lore of your larpcoin!
 * [**Tally**](https://www.tally.xyz/): Tally is the tool larpcoin players use to make decisions together.
 * [**Governor**](https://docs.tally.xyz/knowledge-base/tally/governor-framework): Larpcoins are built with Governor contracts, which makes them compatible with Tally.
 * [**Uniswap**](https://uniswap.org/): Uniswap v3's [single-sided liquidity](https://support.uniswap.org/hc/en-us/articles/20902968738317-What-is-single-sided-liquidity) allows the larpcoin to provide its own initial liquidity without any ETH.
+* [**Party**](https://www.party.app/): If you use Party to launch your larpcoin, you can avoid some of the pitfalls of typical memecoins. The early participants often end up with a huge portion of the token supply, which makes the whole game very ruggable. If you [split the early token supply with several people](https://twitter.com/john_c_palmer/status/1769179600502833569), your larpcoin might be less ruggable.
 
 ## FAQ
 
