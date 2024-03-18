@@ -7,3 +7,6 @@
 [submodule "evm/lib/v3-core"]
 	path = evm/lib/v3-core
 	url = https://github.com/Uniswap/v3-core
+[submodule "evm/lib/v3-periphery"]
+	path = evm/lib/v3-periphery
+	url = https://github.com/Uniswap/v3-periphery
