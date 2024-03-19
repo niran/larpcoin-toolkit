@@ -293,4 +293,61 @@ contract GamePieceTest is Test {
         piece.expirePlayers(accounts);
         assertEq(piece.getVotes(minter), 0);
     }
+
+    function testOwnerCanLockMinting() public {
+        vm.prank(owner);
+        piece.setMintingLocked(true);
+        assertEq(piece.mintingLocked(), true);
+
+        address minter = address(1);
+        vm.deal(minter, 0.002 ether);
+
+        vm.prank(minter);
+        vm.expectRevert();
+        piece.mint{value: 0.001 ether}();
+
+        // Unlock minting and ensure we can mint again.
+        vm.prank(owner);
+        piece.setMintingLocked(false);
+        assertEq(piece.mintingLocked(), false);
+
+        vm.prank(minter);
+        piece.mint{value: 0.001 ether}();
+        assertEq(piece.balanceOf(minter), 1);
+    }
+
+    function testPublicCannotLockMinting() public {
+        address hacker = address(3);
+        vm.prank(hacker);
+        vm.expectRevert();
+        piece.setMintingLocked(true);
+    }
+
+    function testOwnerCanDisableTransferLimits() public {
+        address minter = address(1);
+        address recipient = address(2);
+        vm.deal(minter, 0.001 ether);
+        vm.startPrank(minter);
+        piece.mint{value: 0.001 ether}();
+        piece.delegate(minter);
+        vm.expectRevert();
+        piece.transferFrom(minter, recipient, 1);
+        vm.stopPrank();
+
+        vm.prank(owner);
+        piece.setTransferLimitsDisabled(true);
+        assertEq(piece.transferLimitsDisabled(), true);
+
+        vm.prank(minter);
+        piece.transferFrom(minter, recipient, 1);
+        assertEq(piece.balanceOf(minter), 0);
+        assertEq(piece.balanceOf(recipient), 1);
+    }
+
+    function testPublicCannotDisableTransferLimits() public {
+        address hacker = address(3);
+        vm.prank(hacker);
+        vm.expectRevert();
+        piece.setTransferLimitsDisabled(true);
+    }
 }

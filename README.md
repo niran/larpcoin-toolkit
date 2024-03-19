@@ -69,6 +69,8 @@ The gamemaster sets an initial USD or ETH denominated price for the game piece N
 
 Game piece NFTs can be transferred without any restrictions until the player registers to vote with their game piece. After that, one game piece per round will be locked in the player's account, while the remaining can still be transferred.
 
+Game piece NFTs are open editions: the supply is limited by time. The current generation of game pieces can be locked to disable further minting, and players continue the game with a new game piece NFT contract. Once the new game piece is active, the old piece can become a scarce collectible with no transfer restrictions.
+
 ## Player Control
 
 The gamemaster chooses how players will control the slowlock. The simplest options are:

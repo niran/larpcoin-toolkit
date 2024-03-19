@@ -36,10 +36,14 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
     uint256 _roundLength;
     string _tokenURI;
 
-    mapping(address player => PlayerRecord) playerRecords;
+    bool public mintingLocked;
+    bool public transferLimitsDisabled;
+
+    mapping(address player => PlayerRecord) public playerRecords;
 
     error GamePieceIncorrectMintPayment(uint256 expectedPayment, uint256 actualPayment);
     error GamePieceBelowMinimumVotingBalance(address from, uint256 minimum);
+    error GamePieceMintingLocked();
 
     event PlayerRegistered(address indexed account);
     event PlayerRegistrationExpired(address indexed account, uint256 minimum, uint256 actual);
@@ -83,6 +87,9 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
     }
 
     function _mintTo(address to) internal {
+        if (mintingLocked) {
+            revert GamePieceMintingLocked();
+        }
         _safeMint(to, totalSupply() + 1);
     }
 
@@ -101,7 +108,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         // without restriction.
         address from = _ownerOf(tokenId);
         bool fromPlayer = playerRecords[from].firstTime != 0;
-        if (fromPlayer && balanceOf(from) <= minimumVotingBalance(from)) {
+        if (!transferLimitsDisabled && fromPlayer && balanceOf(from) <= minimumVotingBalance(from)) {
             revert GamePieceBelowMinimumVotingBalance(from, minimumVotingBalance(from));
         }
 
@@ -194,6 +201,14 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
 
     function setCost(uint256 cost_) onlyOwner public {
         _cost = cost_;
+    }
+
+    function setMintingLocked(bool isLocked) onlyOwner public {
+        mintingLocked = isLocked;
+    }
+
+    function setTransferLimitsDisabled(bool isDisabled) onlyOwner public {
+        transferLimitsDisabled = isDisabled;
     }
 
     function _increaseBalance(address account, uint128 value)
