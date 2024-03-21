@@ -20,6 +20,7 @@ contract GamePieceTest is Test {
         piece.mint{value: 0.001 ether}();
         assertEq(piece.balanceOf(minter), 1);
         assertEq(address(piece).balance, 0.001 ether);
+        assertEq(piece.getVotes(minter), 1);
     }
 
     function testOverpayingFails() public {
@@ -38,21 +39,6 @@ contract GamePieceTest is Test {
         vm.prank(minter);
         vm.expectRevert();
         piece.mint{value: 1 gwei}();
-    }
-
-    function testUnregisteredMinterCanTransfer() public {
-        address minter = address(1);
-        vm.deal(minter, 0.001 ether);
-        vm.prank(minter);
-        piece.mint{value: 0.001 ether}();
-        assertEq(piece.balanceOf(minter), 1);
-        assertEq(address(piece).balance, 0.001 ether);
-
-        address recipient = address(2);
-        vm.prank(minter);
-        piece.transferFrom(minter, recipient, 1);
-        assertEq(piece.balanceOf(minter), 0);
-        assertEq(piece.balanceOf(recipient), 1);
     }
 
     function testOwnerCanMintToAnyone() public {

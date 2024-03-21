@@ -91,6 +91,17 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
             revert GamePieceMintingLocked();
         }
         _safeMint(to, totalSupply() + 1);
+
+        // Delegate the minter on their first mint. This has two side effects:
+        // 1) This makes transfers cost more gas, which is fine for our use case.
+        //    Collectors can undelegate if they're not playing with us.
+        // 2) The first GamePiece that a collector mints will always be locked immediately.
+        //    This isn't the desired behavior, but it's better than making players remember
+        //    to register to vote. (New players who receive game pieces through a transfer still
+        //    need to register.)
+        if (playerRecords[to].firstTime == 0) {
+            _delegate(to, to);
+        }
     }
 
     function minimumVotingBalance(address player) public view returns (uint256) {
