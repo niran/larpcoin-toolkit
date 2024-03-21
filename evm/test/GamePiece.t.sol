@@ -3,33 +3,44 @@ pragma solidity ^0.8.18;
 
 import {Test, console} from "forge-std/Test.sol";
 import {GamePiece} from "../src/GamePiece.sol";
+import {Larpcoin} from "../src/Larpcoin.sol";
 
 contract GamePieceTest is Test {
     GamePiece public piece;
+    Larpcoin public larpcoin;
+    uint256 public cost;
     address public owner;
 
     function setUp() public {
         owner = address(bytes20(hex"10000000"));
-        piece = new GamePiece("GamePiece", "LGP", 0.001 ether, 30 * 86400, "http://example.com", owner);
+        cost = 100000e18;
+        larpcoin = new Larpcoin("Larpcoin", "LARP", 1_000_000_000e18);
+        piece = new GamePiece("GamePiece", "LGP", cost, address(larpcoin), address(0), 30 * 86400, "http://example.com", owner);
     }
 
     function testMint() public {
         address minter = address(1);
-        vm.deal(minter, 0.001 ether);
-        vm.prank(minter);
-        piece.mint{value: 0.001 ether}();
+        larpcoin.transfer(minter, cost);
+
+        vm.startPrank(minter);
+        larpcoin.approve(address(piece), cost);
+        piece.mint();
+        vm.stopPrank();
+
         assertEq(piece.balanceOf(minter), 1);
-        assertEq(address(piece).balance, 0.001 ether);
         assertEq(piece.getVotes(minter), 1);
+        assertEq(larpcoin.balanceOf(address(piece)), cost);
+        assertEq(larpcoin.balanceOf(minter), 0);
     }
 
+    /*
     function testOverpayingFails() public {
         address minter = address(1);
         vm.deal(minter, 1 ether);
 
         vm.prank(minter);
         vm.expectRevert();
-        piece.mint{value: 1 ether}();
+        piece.mint();
     }
 
     function testUnderpayingFails() public {
@@ -38,8 +49,9 @@ contract GamePieceTest is Test {
 
         vm.prank(minter);
         vm.expectRevert();
-        piece.mint{value: 1 gwei}();
+        piece.mint();
     }
+    */
 
     function testOwnerCanMintToAnyone() public {
         address recipient = address(2);
@@ -102,52 +114,82 @@ contract GamePieceTest is Test {
 
     function testSetCost() public {
         vm.prank(owner);
-        piece.setCost(1 ether);
+        piece.setCost(cost / 2, address(0));
 
         address minter = address(1);
-        vm.deal(minter, 1 ether);
-        vm.prank(minter);
-        piece.mint{value: 1 ether}();
+        larpcoin.transfer(minter, cost);
+
+        vm.startPrank(minter);
+        larpcoin.approve(address(piece), cost);
+        piece.mint();
+        vm.stopPrank();
+
         assertEq(piece.balanceOf(minter), 1);
-        assertEq(address(piece).balance, 1 ether);
+        assertEq(piece.getVotes(minter), 1);
+        assertEq(larpcoin.balanceOf(address(piece)), cost / 2);
+        assertEq(larpcoin.balanceOf(minter), cost / 2);
     }
 
     function testPublicCannotSetCost() public {
         address hacker = address(3);
         vm.prank(hacker);
         vm.expectRevert();
-        piece.setCost(1 ether);
+        piece.setCost(cost / 2, address(0));
     }
 
     function testMinterCanRegister() public {
         address minter = address(1);
-        vm.deal(minter, 0.001 ether);
+        larpcoin.transfer(minter, cost);
+
         vm.startPrank(minter);
-        piece.mint{value: 0.001 ether}();
+        larpcoin.approve(address(piece), cost);
+        piece.mint();
         piece.delegate(minter);
         vm.stopPrank();
 
         assertEq(piece.getVotes(minter), 1);
     }
 
+    function testTransferRecipientCanRegister() public {
+        address minter = address(1);
+        address recipient = address(2);
+        larpcoin.transfer(minter, cost * 2);
+
+        vm.startPrank(minter);
+        larpcoin.approve(address(piece), cost * 2);
+        piece.mint();
+        piece.mint();
+        piece.transferFrom(minter, recipient, 2);
+        vm.stopPrank();
+
+        vm.prank(recipient);
+        piece.delegate(recipient);
+
+        assertEq(piece.getVotes(recipient), 1);
+    }
+
     function testMinterCanRegisterBeforeMinting() public {
         address minter = address(1);
-        vm.deal(minter, 0.001 ether);
-        vm.prank(minter);
+        larpcoin.transfer(minter, cost);
+
+        vm.startPrank(minter);
+        larpcoin.approve(address(piece), cost);
         piece.delegate(minter);
         assertEq(piece.getVotes(minter), 0);
 
-        vm.prank(minter);
-        piece.mint{value: 0.001 ether}();
+        piece.mint();
+        vm.stopPrank();
         assertEq(piece.getVotes(minter), 1);
     }
 
     function testPlayerCantTransferActivePiece() public {
         address minter = address(1);
         address recipient = address(2);
-        vm.deal(minter, 0.001 ether);
+        larpcoin.transfer(minter, cost);
+
         vm.startPrank(minter);
-        piece.mint{value: 0.001 ether}();
+        larpcoin.approve(address(piece), cost);
+        piece.mint();
         piece.delegate(minter);
         vm.expectRevert();
         piece.transferFrom(minter, recipient, 1);
@@ -157,10 +199,12 @@ contract GamePieceTest is Test {
     function testPlayerCanTransferSurplusPiece() public {
         address minter = address(1);
         address recipient = address(2);
-        vm.deal(minter, 0.002 ether);
+        larpcoin.transfer(minter, cost * 2);
+
         vm.startPrank(minter);
-        piece.mint{value: 0.001 ether}();
-        piece.mint{value: 0.001 ether}();
+        larpcoin.approve(address(piece), cost * 2);
+        piece.mint();
+        piece.mint();
         piece.delegate(minter);
         piece.transferFrom(minter, recipient, 1);
         vm.stopPrank();
@@ -172,13 +216,15 @@ contract GamePieceTest is Test {
 
     function testMinterOnlyGetsOneVote() public {
         address minter = address(1);
-        vm.deal(minter, 0.005 ether);
+        larpcoin.transfer(minter, cost * 5);
+
         vm.startPrank(minter);
-        piece.mint{value: 0.001 ether}();
-        piece.mint{value: 0.001 ether}();
-        piece.mint{value: 0.001 ether}();
-        piece.mint{value: 0.001 ether}();
-        piece.mint{value: 0.001 ether}();
+        larpcoin.approve(address(piece), cost * 5);
+        piece.mint();
+        piece.mint();
+        piece.mint();
+        piece.mint();
+        piece.mint();
         piece.delegate(minter);
         vm.stopPrank();
 
@@ -188,9 +234,11 @@ contract GamePieceTest is Test {
 
     function testPlayerExpiresAfterRound() public {
         address minter = address(1);
-        vm.deal(minter, 0.001 ether);
+        larpcoin.transfer(minter, cost);
+
         vm.startPrank(minter);
-        piece.mint{value: 0.001 ether}();
+        larpcoin.approve(address(piece), cost);
+        piece.mint();
         piece.delegate(minter);
         vm.stopPrank();
 
@@ -203,12 +251,14 @@ contract GamePieceTest is Test {
 
     function testPlayerDoesntExpireAfterRoundIfTheyMint() public {
         address minter = address(1);
-        vm.deal(minter, 0.002 ether);
+        larpcoin.transfer(minter, cost * 2);
+
         vm.startPrank(minter);
-        piece.mint{value: 0.001 ether}();
+        larpcoin.approve(address(piece), cost * 2);
+        piece.mint();
         piece.delegate(minter);
         vm.warp(block.timestamp + 30 * 86400);
-        piece.mint{value: 0.001 ether}();
+        piece.mint();
         vm.stopPrank();
 
         address[] memory accounts = new address[](1);
@@ -219,9 +269,11 @@ contract GamePieceTest is Test {
 
     function testExpiredPlayerReactivates() public {
         address minter = address(1);
-        vm.deal(minter, 0.002 ether);
+        larpcoin.transfer(minter, cost * 2);
+
         vm.startPrank(minter);
-        piece.mint{value: 0.001 ether}();
+        larpcoin.approve(address(piece), cost * 2);
+        piece.mint();
         piece.delegate(minter);
         vm.stopPrank();
 
@@ -232,15 +284,17 @@ contract GamePieceTest is Test {
         assertEq(piece.getVotes(minter), 0);
 
         vm.prank(minter);
-        piece.mint{value: 0.001 ether}();
+        piece.mint();
         assertEq(piece.getVotes(minter), 1);
     }
 
     function testExpiredPlayerReactivatesAfterLongAbsence() public {
         address minter = address(1);
-        vm.deal(minter, 0.002 ether);
+        larpcoin.transfer(minter, cost * 2);
+
         vm.startPrank(minter);
-        piece.mint{value: 0.001 ether}();
+        larpcoin.approve(address(piece), cost * 2);
+        piece.mint();
         piece.delegate(minter);
         vm.stopPrank();
 
@@ -252,15 +306,17 @@ contract GamePieceTest is Test {
 
         vm.warp(block.timestamp + 30 * 86400 * 12);
         vm.prank(minter);
-        piece.mint{value: 0.001 ether}();
+        piece.mint();
         assertEq(piece.getVotes(minter), 1);
     }
 
     function testReactivationExpires() public {
         address minter = address(1);
-        vm.deal(minter, 0.002 ether);
+        larpcoin.transfer(minter, cost * 2);
+
         vm.startPrank(minter);
-        piece.mint{value: 0.001 ether}();
+        larpcoin.approve(address(piece), cost * 2);
+        piece.mint();
         piece.delegate(minter);
         vm.stopPrank();
 
@@ -272,7 +328,7 @@ contract GamePieceTest is Test {
 
         vm.warp(block.timestamp + 30 * 86400 * 12);
         vm.prank(minter);
-        piece.mint{value: 0.001 ether}();
+        piece.mint();
         assertEq(piece.getVotes(minter), 1);
 
         vm.warp(block.timestamp + 30 * 86400);
@@ -286,11 +342,13 @@ contract GamePieceTest is Test {
         assertEq(piece.mintingLocked(), true);
 
         address minter = address(1);
-        vm.deal(minter, 0.002 ether);
+        larpcoin.transfer(minter, cost * 2);
 
-        vm.prank(minter);
+        vm.startPrank(minter);
+        larpcoin.approve(address(piece), cost * 2);
         vm.expectRevert();
-        piece.mint{value: 0.001 ether}();
+        piece.mint();
+        vm.stopPrank();
 
         // Unlock minting and ensure we can mint again.
         vm.prank(owner);
@@ -298,7 +356,7 @@ contract GamePieceTest is Test {
         assertEq(piece.mintingLocked(), false);
 
         vm.prank(minter);
-        piece.mint{value: 0.001 ether}();
+        piece.mint();
         assertEq(piece.balanceOf(minter), 1);
     }
 
@@ -312,9 +370,11 @@ contract GamePieceTest is Test {
     function testOwnerCanDisableTransferLimits() public {
         address minter = address(1);
         address recipient = address(2);
-        vm.deal(minter, 0.001 ether);
+        larpcoin.transfer(minter, cost);
+
         vm.startPrank(minter);
-        piece.mint{value: 0.001 ether}();
+        larpcoin.approve(address(piece), cost);
+        piece.mint();
         piece.delegate(minter);
         vm.expectRevert();
         piece.transferFrom(minter, recipient, 1);

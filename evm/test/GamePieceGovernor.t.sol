@@ -36,27 +36,28 @@ contract GamePieceGovernorTest is Test {
         GamePieceArgs memory gpArgs = GamePieceArgs({
             name: "GamePiece",
             symbol: "LGP",
-            cost: 0.001 ether,
+            cost: 100000e18,
             roundLength: 30 * 86400,
             tokenURI: "http://example.com"
         });
         return factory.build(lcArgs, gpArgs, 86400 /* 1 day */);
     }
 
-    function mintAndDelegate(address account, GamePiece piece) internal {
-        vm.deal(account, 0.001 ether);
-        vm.prank(account);
-        piece.mint{value: 0.001 ether}();
-        vm.prank(account);
+    function mintAndDelegate(address account, GamePiece piece, Larpcoin larpcoin) internal {
+        larpcoin.transfer(address(account), 100000e18);
+        vm.startPrank(account);
+        larpcoin.approve(address(piece), 100000e18);
+        piece.mint();
         piece.delegate(account);
+        vm.stopPrank();
     }
 
     function executeViaGPGov(LarpcoinContracts memory c, address target, uint256 value, bytes memory data, string memory description) internal {
         address proposer = address(1);
         address[4] memory voters = [address(2), address(3), address(4), address(5)];
-        mintAndDelegate(proposer, c.piece);
+        mintAndDelegate(proposer, c.piece, c.larpcoin);
         for (uint256 i = 0; i < voters.length; i++) {
-            mintAndDelegate(voters[i], c.piece);
+            mintAndDelegate(voters[i], c.piece, c.larpcoin);
         }
         
         // Delegation takes effect on the next block.
@@ -91,7 +92,7 @@ contract GamePieceGovernorTest is Test {
 
     function testGPGovCanPassProposals() public {
         LarpcoinContracts memory c = buildContracts();
-        c.larpcoin.transfer(address(c.gpHouse), 500_000_000e18);
+        c.larpcoin.transfer(address(c.gpHouse), 100_000_000e18);
         address dest = address(1);
         executeViaGPGov(c, address(c.larpcoin), 0, abi.encodeCall(c.larpcoin.transfer, (dest, 100_000_000e18)), "Send larpcoins to destination");
         assertEq(c.larpcoin.balanceOf(dest), 100_000_000e18);

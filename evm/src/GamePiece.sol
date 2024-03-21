@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/governance/utils/Votes.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 
 struct PlayerRecord {    
@@ -32,8 +33,11 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
     string _name;
     string _symbol;
 
-    uint256 _cost;
-    uint256 _roundLength;
+    uint256 public cost;
+    address immutable public larpcoin;
+    address public referenceToken;
+
+    uint256 immutable public roundLength;
     string _tokenURI;
 
     bool public mintingLocked;
@@ -49,7 +53,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
     event PlayerRegistrationExpired(address indexed account, uint256 minimum, uint256 actual);
     event PlayerReactivated(address indexed account);
     
-    constructor(string memory name_, string memory symbol_, uint256 cost_, uint256 roundLength_, string memory tokenURI_, address initialOwner)
+    constructor(string memory name_, string memory symbol_, uint256 cost_, address larpcoin_, address referenceToken_, uint256 roundLength_, string memory tokenURI_, address initialOwner)
         ERC721(name_, symbol_)
         EIP712(name_, "1")
         Ownable(initialOwner)
@@ -57,8 +61,12 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         
         _name = name_;
         _symbol = symbol_;
-        _cost = cost_;
-        _roundLength = roundLength_;
+        
+        cost = cost_;
+        larpcoin = larpcoin_;
+        referenceToken = referenceToken_;
+
+        roundLength = roundLength_;
         _tokenURI = tokenURI_;
     }
 
@@ -70,14 +78,12 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         return _symbol;
     }
 
-    function roundLength() public view returns (uint256) {
-        return _roundLength;
-    }
-
     function mint() public payable {
-        if (msg.value != _cost) {
-            revert GamePieceIncorrectMintPayment(_cost, msg.value);
-        }
+        // TODO: Check for msg.value and use ETH to mint without an approval step,
+
+        ERC20 larpcoinToken = ERC20(larpcoin);
+        // TODO: Calculate the cost when we're using a reference token.
+        larpcoinToken.transferFrom(msg.sender, address(this), cost);
 
         _mintTo(msg.sender);
     }
@@ -105,7 +111,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
     }
 
     function minimumVotingBalance(address player) public view returns (uint256) {
-        uint256 elapsedRounds = (block.timestamp - playerRecords[player].activationTime) / _roundLength;
+        uint256 elapsedRounds = (block.timestamp - playerRecords[player].activationTime) / roundLength;
         return elapsedRounds + playerRecords[player].activationBalance + 1;
     }
 
@@ -210,8 +216,9 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         _symbol = symbol_;
     }
 
-    function setCost(uint256 cost_) onlyOwner public {
-        _cost = cost_;
+    function setCost(uint256 cost_, address referenceToken_) onlyOwner public {
+        cost = cost_;
+        referenceToken = referenceToken_ != larpcoin ? referenceToken_ : address(0);
     }
 
     function setMintingLocked(bool isLocked) onlyOwner public {
