@@ -19,7 +19,11 @@ contract LarpcoinSetup is Script {
             name: "Larpcoin",
             symbol: "LARP",
             totalSupply: 1_000_000_000e18,
-            supplyOwner: address(this)
+            liquiditySupply: 500_000_000e18,
+            // Prices when larpcoin market cap is 10 ETH
+            larpcoinSqrtPriceX96: 7922816251426434139029504,
+            wethSqrtPriceX96: 792281625142643375935439503360000,
+            remainderRecipient: address(this)
         });
         GamePieceArgs memory gpArgs = GamePieceArgs({
             name: "GamePiece",
@@ -30,7 +34,11 @@ contract LarpcoinSetup is Script {
         });
 
         vm.startBroadcast();
-        LarpcoinFactory factory = new LarpcoinFactory();
+        LarpcoinFactory factory = new LarpcoinFactory(
+            0x1238536071E1c677A632429e3655c799b22cDA52,
+            0x0227628f3F023bb0B980b67D528571c95c6DaC1c,
+            0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
+        );
         factory.build(lcArgs, gpArgs, 86400 /* 1 day */);
         vm.stopBroadcast();
     }
