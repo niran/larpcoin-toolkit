@@ -138,7 +138,7 @@ contract LarpcoinFactory is PoolInitializer {
     {
         LarpcoinContracts memory c;
         c.larpcoin = new Larpcoin(lcArgs.name, lcArgs.symbol, lcArgs.totalSupply);
-        c.piece = new GamePiece(gpArgs.name, gpArgs.symbol, gpArgs.cost, address(c.larpcoin), address(0), gpArgs.roundLength, gpArgs.tokenURI, address(this));
+        c.piece = new GamePiece(gpArgs.name, gpArgs.symbol, gpArgs.cost, address(c.larpcoin), gpArgs.roundLength, gpArgs.tokenURI, address(this));
         
         (IUniswapV3Pool pool, uint256 actualLarpcoinsInPool) = initializeLiquidity(c, lcArgs);
         c.pool = pool;

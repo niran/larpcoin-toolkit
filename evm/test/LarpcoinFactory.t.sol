@@ -5,26 +5,13 @@ import {Test, console} from "forge-std/Test.sol";
 
 import "@openzeppelin/contracts/governance/TimelockController.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ISwapRouter} from "../src/uniswap/ISwapRouter.sol";
 
 import "../src/LarpcoinFactory.sol";
 import {Larpcoin} from "../src/Larpcoin.sol";
 import {GamePiece} from "../src/GamePiece.sol";
 import {LarpcoinGovernor} from "../src/LarpcoinGovernor.sol";
 import {GamePieceGovernor} from "../src/GamePieceGovernor.sol";
-
-interface ISwapRouter {
-    struct ExactInputSingleParams {
-        address tokenIn;
-        address tokenOut;
-        uint24 fee;
-        address recipient;
-        uint256 amountIn;
-        uint256 amountOutMinimum;
-        uint160 sqrtPriceLimitX96;
-    }
-
-    function exactInputSingle(ExactInputSingleParams calldata params) external payable returns (uint256 amountOut);
-}
 
 interface IWETH {
     function deposit() external payable;

@@ -69,8 +69,6 @@ The ideal configuration for a slowlock is not yet understood, but here are some 
 
 The gamemaster sets an initial larpcoin-denominated cost for the game piece NFT and the length of one round. One game piece expires at the end of each round for each player. Users swap for the larpcoins they need, then mint their game piece. The NFT contract deposits incoming larpcoins into the slowlock, where they will be slowly streamed over time for the players to control together.
 
-Sometimes games play better when there's a stable reference value to mint the NFT in USD or ETH. Larpcoins are still required to mint, but the quantity of larpcoins is determined by how many of the reference token would be needed to swap for the game piece's cost in larpcoins.
-
 Game piece NFTs can be transferred without any restrictions until the player registers to vote with their game piece. After that, one game piece per round will be locked in the player's account, while the remaining can still be transferred.
 
 Game piece NFTs are open editions: the supply is limited by time. The current generation of game pieces can be locked to disable further minting, and players continue the game with a new game piece NFT contract. Once the new game piece is active, the old piece can become a scarce collectible with no transfer restrictions.
@@ -124,7 +122,6 @@ You should rename the houses to fit with the lore of your larpcoin!
 - [x] Update the game piece's ERC721Votes logic to count one vote per address, expire votes and lock voting NFTs
 - [x] Uniswap single-sided inital liquidity
 - [x] Mint GamePiece with larpcoins
-- [ ] Allow GamePiece to be denominated in USD or ETH
 - [ ] Slowlock contract to receive tokens from minting
 - [ ] Basic next.js larpcoin landing page
 - [ ] Mint from landing page

@@ -35,7 +35,6 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
 
     uint256 public cost;
     address immutable public larpcoin;
-    address public referenceToken;
 
     uint256 immutable public roundLength;
     string _tokenURI;
@@ -53,7 +52,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
     event PlayerRegistrationExpired(address indexed account, uint256 minimum, uint256 actual);
     event PlayerReactivated(address indexed account);
     
-    constructor(string memory name_, string memory symbol_, uint256 cost_, address larpcoin_, address referenceToken_, uint256 roundLength_, string memory tokenURI_, address initialOwner)
+    constructor(string memory name_, string memory symbol_, uint256 cost_, address larpcoin_, uint256 roundLength_, string memory tokenURI_, address initialOwner)
         ERC721(name_, symbol_)
         EIP712(name_, "1")
         Ownable(initialOwner)
@@ -64,7 +63,6 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         
         cost = cost_;
         larpcoin = larpcoin_;
-        referenceToken = referenceToken_;
 
         roundLength = roundLength_;
         _tokenURI = tokenURI_;
@@ -79,10 +77,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
     }
 
     function mint() public payable {
-        // TODO: Check for msg.value and use ETH to mint without an approval step,
-
         ERC20 larpcoinToken = ERC20(larpcoin);
-        // TODO: Calculate the cost when we're using a reference token.
         larpcoinToken.transferFrom(msg.sender, address(this), cost);
 
         _mintTo(msg.sender);
@@ -216,9 +211,8 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         _symbol = symbol_;
     }
 
-    function setCost(uint256 cost_, address referenceToken_) onlyOwner public {
+    function setCost(uint256 cost_) onlyOwner public {
         cost = cost_;
-        referenceToken = referenceToken_ != larpcoin ? referenceToken_ : address(0);
     }
 
     function setMintingLocked(bool isLocked) onlyOwner public {

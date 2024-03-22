@@ -15,7 +15,7 @@ contract GamePieceTest is Test {
         owner = address(bytes20(hex"10000000"));
         cost = 100000e18;
         larpcoin = new Larpcoin("Larpcoin", "LARP", 1_000_000_000e18);
-        piece = new GamePiece("GamePiece", "LGP", cost, address(larpcoin), address(0), 30 * 86400, "http://example.com", owner);
+        piece = new GamePiece("GamePiece", "LGP", cost, address(larpcoin), 30 * 86400, "http://example.com", owner);
     }
 
     function testMint() public {
@@ -114,7 +114,7 @@ contract GamePieceTest is Test {
 
     function testSetCost() public {
         vm.prank(owner);
-        piece.setCost(cost / 2, address(0));
+        piece.setCost(cost / 2);
 
         address minter = address(1);
         larpcoin.transfer(minter, cost);
@@ -134,7 +134,7 @@ contract GamePieceTest is Test {
         address hacker = address(3);
         vm.prank(hacker);
         vm.expectRevert();
-        piece.setCost(cost / 2, address(0));
+        piece.setCost(cost / 2);
     }
 
     function testMinterCanRegister() public {
