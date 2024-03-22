@@ -122,7 +122,7 @@ You should rename the houses to fit with the lore of your larpcoin!
 - [x] Update the game piece's ERC721Votes logic to count one vote per address, expire votes and lock voting NFTs
 - [x] Uniswap single-sided inital liquidity
 - [x] Mint GamePiece with larpcoins
-- [ ] Slowlock contract to receive tokens from minting
+- [x] Slowlock contract to receive tokens from minting
 - [ ] Basic next.js larpcoin landing page
 - [ ] Mint from landing page
 - [ ] Buy larpcoin from landing page

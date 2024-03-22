@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/governance/utils/Votes.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
+import {Slowlock} from "./Slowlock.sol";
+
 
 struct PlayerRecord {    
     // The first time the player registered to vote. Never changes.
@@ -35,6 +37,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
 
     uint256 public cost;
     address immutable public larpcoin;
+    Slowlock public slowlock;
 
     uint256 immutable public roundLength;
     string _tokenURI;
@@ -52,7 +55,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
     event PlayerRegistrationExpired(address indexed account, uint256 minimum, uint256 actual);
     event PlayerReactivated(address indexed account);
     
-    constructor(string memory name_, string memory symbol_, uint256 cost_, address larpcoin_, uint256 roundLength_, string memory tokenURI_, address initialOwner)
+    constructor(string memory name_, string memory symbol_, uint256 cost_, address larpcoin_, address slowlock_, uint256 roundLength_, string memory tokenURI_, address initialOwner)
         ERC721(name_, symbol_)
         EIP712(name_, "1")
         Ownable(initialOwner)
@@ -63,6 +66,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         
         cost = cost_;
         larpcoin = larpcoin_;
+        slowlock = Slowlock(slowlock_);
 
         roundLength = roundLength_;
         _tokenURI = tokenURI_;
@@ -78,7 +82,8 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
 
     function mint() public payable {
         ERC20 larpcoinToken = ERC20(larpcoin);
-        larpcoinToken.transferFrom(msg.sender, address(this), cost);
+        larpcoinToken.transferFrom(msg.sender, address(slowlock), cost);
+        slowlock.stream();
 
         _mintTo(msg.sender);
     }
@@ -213,6 +218,10 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
 
     function setCost(uint256 cost_) onlyOwner public {
         cost = cost_;
+    }
+
+    function setSlowlock(address slowlock_) onlyOwner public {
+        slowlock = Slowlock(slowlock_);
     }
 
     function setMintingLocked(bool isLocked) onlyOwner public {

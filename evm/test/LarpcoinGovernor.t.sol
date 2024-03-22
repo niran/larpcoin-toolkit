@@ -11,8 +11,10 @@ import {GamePiece} from "../src/GamePiece.sol";
 import {LarpcoinGovernor} from "../src/LarpcoinGovernor.sol";
 import {GamePieceGovernor} from "../src/GamePieceGovernor.sol";
 
+import {SwapsForLarpcoins} from "./SwapsForLarpcoins.sol";
 
-contract LarpcoinGovernorTest is Test {
+
+contract LarpcoinGovernorTest is Test, SwapsForLarpcoins {
     LarpcoinFactory public factory;
 
     function setUp() public {
@@ -31,8 +33,7 @@ contract LarpcoinGovernorTest is Test {
             liquiditySupply: 500_000_000e18,
             // Prices when larpcoin market cap is 10 ETH
             larpcoinSqrtPriceX96: 7922816251426434139029504,
-            wethSqrtPriceX96: 792281625142643375935439503360000,
-            remainderRecipient: address(this)
+            wethSqrtPriceX96: 792281625142643375935439503360000
         });
         GamePieceArgs memory gpArgs = GamePieceArgs({
             name: "GamePiece",
@@ -85,6 +86,7 @@ contract LarpcoinGovernorTest is Test {
 
     function testLCGovCanPassProposals() public {
         LarpcoinContracts memory c = buildContracts();
+        swapForLarpcoins(address(c.larpcoin));
         executeViaLCGov(c, address(c.piece), 0, abi.encodeCall(c.piece.setName, ("NEWNAME")), "Change the name of the GamePiece to NEWNAME");
         assertEq(c.piece.name(), "NEWNAME");
     }

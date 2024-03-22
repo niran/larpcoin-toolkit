@@ -22,8 +22,7 @@ contract LarpcoinSetup is Script {
             liquiditySupply: 500_000_000e18,
             // Prices when larpcoin market cap is 10 ETH
             larpcoinSqrtPriceX96: 7922816251426434139029504,
-            wethSqrtPriceX96: 792281625142643375935439503360000,
-            remainderRecipient: address(this)
+            wethSqrtPriceX96: 792281625142643375935439503360000
         });
         GamePieceArgs memory gpArgs = GamePieceArgs({
             name: "GamePiece",

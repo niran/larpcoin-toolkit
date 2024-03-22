@@ -4,14 +4,18 @@ pragma solidity ^0.8.18;
 import {Test, console} from "forge-std/Test.sol";
 
 import "@openzeppelin/contracts/governance/TimelockController.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ISwapRouter} from "../src/uniswap/ISwapRouter.sol";
 
 import "../src/LarpcoinFactory.sol";
 import {Larpcoin} from "../src/Larpcoin.sol";
 import {GamePiece} from "../src/GamePiece.sol";
 import {GamePieceGovernor} from "../src/GamePieceGovernor.sol";
 
+import {SwapsForLarpcoins} from "./SwapsForLarpcoins.sol";
 
-contract GamePieceGovernorTest is Test {
+
+contract GamePieceGovernorTest is Test, SwapsForLarpcoins {
     LarpcoinFactory public factory;
 
     function setUp() public {
@@ -30,8 +34,7 @@ contract GamePieceGovernorTest is Test {
             liquiditySupply: 500_000_000e18,
             // Prices when larpcoin market cap is 10 ETH
             larpcoinSqrtPriceX96: 7922816251426434139029504,
-            wethSqrtPriceX96: 792281625142643375935439503360000,
-            remainderRecipient: address(this)
+            wethSqrtPriceX96: 792281625142643375935439503360000
         });
         GamePieceArgs memory gpArgs = GamePieceArgs({
             name: "GamePiece",
@@ -92,7 +95,10 @@ contract GamePieceGovernorTest is Test {
 
     function testGPGovCanPassProposals() public {
         LarpcoinContracts memory c = buildContracts();
-        c.larpcoin.transfer(address(c.gpHouse), 100_000_000e18);
+        swapForLarpcoins(address(c.larpcoin));
+        vm.warp(block.timestamp + 365 days * 4);
+        c.slowlock.stream();
+
         address dest = address(1);
         executeViaGPGov(c, address(c.larpcoin), 0, abi.encodeCall(c.larpcoin.transfer, (dest, 100_000_000e18)), "Send larpcoins to destination");
         assertEq(c.larpcoin.balanceOf(dest), 100_000_000e18);

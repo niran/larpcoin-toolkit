@@ -42,8 +42,7 @@ contract LarpcoinFactoryTest is Test {
             liquiditySupply: 500_000_000e18,
             // Prices when larpcoin market cap is 10 ETH
             larpcoinSqrtPriceX96: 7922816251426434139029504,
-            wethSqrtPriceX96: 792281625142643375935439503360000,
-            remainderRecipient: address(this)
+            wethSqrtPriceX96: 792281625142643375935439503360000
         });
         GamePieceArgs memory gpArgs = GamePieceArgs({
             name: "GamePiece",
@@ -59,7 +58,7 @@ contract LarpcoinFactoryTest is Test {
         LarpcoinContracts memory c = buildContracts();
 
         assertEq(c.larpcoin.totalSupply(), 1_000_000_000e18);
-        assertGe(c.larpcoin.balanceOf(address(this)), 500_000_000e18);
+        assertGe(c.larpcoin.balanceOf(address(c.slowlock)), 500_000_000e18);
         assertGe(c.larpcoin.balanceOf(address(c.pool)), 499_999_999e18);
         assertEq(c.piece.owner(), address(c.lcHouse));
         assertTrue(c.gpHouse.hasRole(c.gpHouse.PROPOSER_ROLE(), address(c.gpGov)));
