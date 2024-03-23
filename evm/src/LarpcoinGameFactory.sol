@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/governance/TimelockController.sol";
 import '@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol';
 
 import {LarpcoinFactory, LarpcoinArgs} from "./subfactories/LarpcoinFactory.sol";
+import {LarpcoinGovernorFactory} from "./subfactories/LarpcoinGovernorFactory.sol";
+
 import {Larpcoin} from "./Larpcoin.sol";
 import {Slowlock} from "./Slowlock.sol";
 import {GamePiece} from "./GamePiece.sol";
@@ -31,10 +33,12 @@ struct GamePieceArgs {
 }
 
 contract LarpcoinGameFactory {
-    LarpcoinFactory larpcoinFactory;
+    LarpcoinFactory lcFactory;
+    LarpcoinGovernorFactory lcGovFactory;
 
-    constructor(address _larpcoinFactory) {
-        larpcoinFactory = LarpcoinFactory(_larpcoinFactory);
+    constructor(address _lcFactory, address _lcGovFactory) {
+        lcFactory = LarpcoinFactory(_lcFactory);
+        lcGovFactory = LarpcoinGovernorFactory(_lcGovFactory);
     }
 
     function openRole() internal pure returns (address[] memory) {
@@ -87,15 +91,13 @@ contract LarpcoinGameFactory {
     {
         LarpcoinContracts memory c;
   
-        (Larpcoin larpcoin, IUniswapV3Pool pool, uint256 actualLarpcoinsInPool) = larpcoinFactory.build(lcArgs);
+        (Larpcoin larpcoin, IUniswapV3Pool pool, uint256 actualLarpcoinsInPool) = lcFactory.build(lcArgs);
         c.larpcoin = larpcoin;
         c.pool = pool;
          
-        c.lcHouse = new TimelockController(timelockDelay, new address[](0), openRole(), address(this));
-        c.lcGov = new LarpcoinGovernor(c.larpcoin, c.lcHouse);
-        c.lcHouse.grantRole(c.lcHouse.PROPOSER_ROLE(), address(c.lcGov));
-        c.lcHouse.grantRole(c.lcHouse.CANCELLER_ROLE(), address(c.lcGov));
-        c.lcHouse.revokeRole(c.lcHouse.DEFAULT_ADMIN_ROLE(), address(this));
+        (LarpcoinGovernor lcGov, TimelockController lcHouse) = lcGovFactory.build(address(larpcoin), timelockDelay);
+        c.lcGov = lcGov;
+        c.lcHouse = lcHouse;
 
         c.gpHouse = new TimelockController(timelockDelay, new address[](0), openRole(), address(this));
         c.slowlock = createSlowlock(address(c.lcHouse), address(c.gpHouse), c.larpcoin);
