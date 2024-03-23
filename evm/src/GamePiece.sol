@@ -88,6 +88,16 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         _mintTo(msg.sender);
     }
 
+    function mintPieces(uint256 quantity) public {
+        ERC20 larpcoinToken = ERC20(larpcoin);
+        larpcoinToken.transferFrom(msg.sender, address(slowlock), cost * quantity);
+        slowlock.stream();
+
+        for (uint256 i = 0; i < quantity; i++) {
+            _mintTo(msg.sender);
+        }
+    }
+
     function mintAndPlay() public {
         mint();
 

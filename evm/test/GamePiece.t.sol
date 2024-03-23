@@ -71,6 +71,19 @@ contract GamePieceTest is Test {
         assertEq(larpcoin.balanceOf(minter), 0);
     }
 
+    function testMintFailsWithoutEnoughMoney() public {
+        address minter = address(1);
+        larpcoin.transfer(minter, cost / 2);
+
+        vm.startPrank(minter);
+        larpcoin.approve(address(piece), cost);
+        vm.expectRevert();
+        piece.mint();
+        vm.stopPrank();
+
+        assertEq(piece.balanceOf(minter), 0);
+    }
+
     function testMintAndPlay() public {
         address minter = address(1);
         larpcoin.transfer(minter, cost);
@@ -84,6 +97,34 @@ contract GamePieceTest is Test {
         assertEq(piece.getVotes(minter), 1);
         assertGt(larpcoin.balanceOf(address(slowlock)), 0);
         assertEq(larpcoin.balanceOf(minter), 0);
+    }
+
+    function testMintPieces() public {
+        address minter = address(1);
+        larpcoin.transfer(minter, cost * 10);
+
+        vm.startPrank(minter);
+        larpcoin.approve(address(piece), cost * 10);
+        piece.mintPieces(10);
+        vm.stopPrank();
+
+        assertEq(piece.balanceOf(minter), 10);
+        assertEq(piece.getVotes(minter), 0);
+        assertGt(larpcoin.balanceOf(address(slowlock)), 0);
+        assertEq(larpcoin.balanceOf(minter), 0);
+    }
+
+    function testMintPiecesFailsWithoutEnoughMoney() public {
+        address minter = address(1);
+        larpcoin.transfer(minter, cost * 9);
+
+        vm.startPrank(minter);
+        larpcoin.approve(address(piece), cost * 10);
+        vm.expectRevert();
+        piece.mintPieces(10);
+        vm.stopPrank();
+
+        assertEq(piece.balanceOf(minter), 0);
     }
 
     function testOwnerCanMintToAnyone() public {
@@ -185,13 +226,12 @@ contract GamePieceTest is Test {
     function testTransferRecipientCanRegister() public {
         address minter = address(1);
         address recipient = address(2);
-        larpcoin.transfer(minter, cost * 2);
+        larpcoin.transfer(minter, cost);
 
         vm.startPrank(minter);
-        larpcoin.approve(address(piece), cost * 2);
+        larpcoin.approve(address(piece), cost);
         piece.mint();
-        piece.mint();
-        piece.transferFrom(minter, recipient, 2);
+        piece.transferFrom(minter, recipient, 1);
         vm.stopPrank();
 
         vm.prank(recipient);
