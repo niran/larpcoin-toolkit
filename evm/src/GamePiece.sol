@@ -145,9 +145,14 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
         if (toPlayer && !toRecord.isActive) {
             // An expired player has acquired another game piece. Re-register them as an
             // active user.
-            toRecord.activationTime = block.timestamp;
-            toRecord.activationBalance = balanceOf(to) - 1;
             toRecord.isActive = true;
+            if (minimumVotingBalance(to) > balanceOf(to)) {
+                // Reset the user's activation time and balance if they've been inactive more than
+                // a full round. This allows a grace period of one round for players to reactivate
+                // without losing their coveted activtion time.
+                toRecord.activationTime = block.timestamp;
+                toRecord.activationBalance = balanceOf(to) - 1;
+            }
             _transferVotingUnits(address(0), to, 1);
             emit PlayerReactivated(to);
         }

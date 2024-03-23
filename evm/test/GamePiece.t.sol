@@ -341,6 +341,7 @@ contract GamePieceTest is Test {
 
     function testExpiredPlayerReactivates() public {
         address minter = address(1);
+        uint256 activationTime = block.timestamp;
         larpcoin.transfer(minter, cost * 2);
 
         vm.startPrank(minter);
@@ -358,10 +359,13 @@ contract GamePieceTest is Test {
         vm.prank(minter);
         piece.mint();
         assertEq(piece.getVotes(minter), 1);
+        (, uint256 updatedActivationTime, , ) = piece.playerRecords(minter);
+        assertEq(updatedActivationTime, activationTime);
     }
 
     function testExpiredPlayerReactivatesAfterLongAbsence() public {
         address minter = address(1);
+        uint256 activationTime = block.timestamp;
         larpcoin.transfer(minter, cost * 2);
 
         vm.startPrank(minter);
@@ -380,6 +384,8 @@ contract GamePieceTest is Test {
         vm.prank(minter);
         piece.mint();
         assertEq(piece.getVotes(minter), 1);
+        (, uint256 updatedActivationTime, , ) = piece.playerRecords(minter);
+        assertGt(updatedActivationTime, activationTime);
     }
 
     function testReactivationExpires() public {
