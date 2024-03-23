@@ -11,6 +11,7 @@ import "../src/LarpcoinGameFactory.sol";
 import {LarpcoinFactory, LarpcoinArgs} from "../src/subfactories/LarpcoinFactory.sol";
 import {LarpcoinGovernorFactory} from "../src/subfactories/LarpcoinGovernorFactory.sol";
 import {GamePieceGovernorFactory} from "../src/subfactories/GamePieceGovernorFactory.sol";
+import {TimelockControllerFactory} from "../src/subfactories/TimelockControllerFactory.sol";
 import {Larpcoin} from "../src/Larpcoin.sol";
 import {GamePiece} from "../src/GamePiece.sol";
 import {LarpcoinGovernor} from "../src/LarpcoinGovernor.sol";
@@ -35,8 +36,10 @@ contract LarpcoinGameFactoryTest is Test {
             0x0227628f3F023bb0B980b67D528571c95c6DaC1c,
             0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
         );
-        LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory();
-        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory();
+        TimelockControllerFactory tcFactory = new TimelockControllerFactory();
+        LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory(address(tcFactory));
+        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory));        
+
         factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
         swapRouter = ISwapRouter(0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E);
     }

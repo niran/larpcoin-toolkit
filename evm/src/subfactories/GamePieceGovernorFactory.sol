@@ -3,6 +3,7 @@ pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/governance/TimelockController.sol";
 
+import {TimelockControllerFactory} from "./TimelockControllerFactory.sol";
 import {GamePieceGovernor} from "../GamePieceGovernor.sol";
 import {GamePiece} from "../GamePiece.sol";
 import {Slowlock} from "../Slowlock.sol";
@@ -26,10 +27,10 @@ struct GamePieceContracts {
 }
 
 contract GamePieceGovernorFactory {
-    function openRole() internal pure returns (address[] memory) {
-        address[] memory role = new address[](1);
-        role[0] = address(0);
-        return role;
+    TimelockControllerFactory tcFactory;
+
+    constructor(address _tcFactory) {
+        tcFactory = TimelockControllerFactory(_tcFactory);
     }
 
     function createSlowlock(address owner, address recipient, address larpcoin) public returns (Slowlock) {
@@ -72,7 +73,7 @@ contract GamePieceGovernorFactory {
 
     function build(GamePieceArgs memory gpArgs, uint256 timelockDelay, address larpcoin, address lcTimelock) public returns (GamePieceContracts memory) {
         GamePieceContracts memory gpc;
-        gpc.timelock = new TimelockController(timelockDelay, new address[](0), openRole(), address(this));
+        gpc.timelock = tcFactory.build(timelockDelay);
         gpc.slowlock = createSlowlock(lcTimelock, address(gpc.timelock), larpcoin);
         gpc.piece = new GamePiece(gpArgs.name, gpArgs.symbol, gpArgs.cost, larpcoin, address(gpc.slowlock), gpArgs.roundLength, gpArgs.tokenURI, lcTimelock);
         
