@@ -66,6 +66,21 @@ contract GamePieceTest is Test {
         vm.stopPrank();
 
         assertEq(piece.balanceOf(minter), 1);
+        assertEq(piece.getVotes(minter), 0);
+        assertGt(larpcoin.balanceOf(address(slowlock)), 0);
+        assertEq(larpcoin.balanceOf(minter), 0);
+    }
+
+    function testMintAndPlay() public {
+        address minter = address(1);
+        larpcoin.transfer(minter, cost);
+
+        vm.startPrank(minter);
+        larpcoin.approve(address(piece), cost);
+        piece.mintAndPlay();
+        vm.stopPrank();
+
+        assertEq(piece.balanceOf(minter), 1);
         assertEq(piece.getVotes(minter), 1);
         assertGt(larpcoin.balanceOf(address(slowlock)), 0);
         assertEq(larpcoin.balanceOf(minter), 0);
@@ -143,7 +158,6 @@ contract GamePieceTest is Test {
         vm.stopPrank();
 
         assertEq(piece.balanceOf(minter), 1);
-        assertEq(piece.getVotes(minter), 1);
         assertEq(larpcoin.balanceOf(address(slowlock)), cost / 2);
         assertEq(larpcoin.balanceOf(minter), cost / 2);
     }
