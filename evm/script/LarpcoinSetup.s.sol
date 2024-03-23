@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/governance/TimelockController.sol";
 import "../src/LarpcoinGameFactory.sol";
 import {LarpcoinFactory, LarpcoinArgs} from "../src/subfactories/LarpcoinFactory.sol";
 import {LarpcoinGovernorFactory} from "../src/subfactories/LarpcoinGovernorFactory.sol";
+import {GamePieceGovernorFactory} from "../src/subfactories/GamePieceGovernorFactory.sol";
 import {GamePiece} from "../src/GamePiece.sol";
 import {LarpcoinGovernor} from "../src/LarpcoinGovernor.sol";
 import {GamePieceGovernor} from "../src/GamePieceGovernor.sol";
@@ -41,7 +42,8 @@ contract LarpcoinSetup is Script {
             0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
         );
         LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory();
-        LarpcoinGameFactory factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory));
+        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory();
+        LarpcoinGameFactory factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
         factory.build(lcArgs, gpArgs, 86400 /* 1 day */);
         vm.stopBroadcast();
     }

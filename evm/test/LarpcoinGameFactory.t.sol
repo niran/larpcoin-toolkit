@@ -10,6 +10,7 @@ import {ISwapRouter} from "../src/uniswap/ISwapRouter.sol";
 import "../src/LarpcoinGameFactory.sol";
 import {LarpcoinFactory, LarpcoinArgs} from "../src/subfactories/LarpcoinFactory.sol";
 import {LarpcoinGovernorFactory} from "../src/subfactories/LarpcoinGovernorFactory.sol";
+import {GamePieceGovernorFactory} from "../src/subfactories/GamePieceGovernorFactory.sol";
 import {Larpcoin} from "../src/Larpcoin.sol";
 import {GamePiece} from "../src/GamePiece.sol";
 import {LarpcoinGovernor} from "../src/LarpcoinGovernor.sol";
@@ -35,7 +36,8 @@ contract LarpcoinGameFactoryTest is Test {
             0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
         );
         LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory();
-        factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory));
+        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory();
+        factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
         swapRouter = ISwapRouter(0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E);
     }
 
@@ -65,11 +67,11 @@ contract LarpcoinGameFactoryTest is Test {
         assertEq(c.larpcoin.totalSupply(), 1_000_000_000e18);
         assertGe(c.larpcoin.balanceOf(address(c.slowlock)), 500_000_000e18);
         assertGe(c.larpcoin.balanceOf(address(c.pool)), 499_999_999e18);
-        assertEq(c.piece.owner(), address(c.lcHouse));
-        assertTrue(c.gpHouse.hasRole(c.gpHouse.PROPOSER_ROLE(), address(c.gpGov)));
-        assertTrue(c.gpHouse.hasRole(c.gpHouse.CANCELLER_ROLE(), address(c.gpGov)));
-        assertTrue(c.lcHouse.hasRole(c.lcHouse.PROPOSER_ROLE(), address(c.lcGov)));
-        assertTrue(c.lcHouse.hasRole(c.lcHouse.CANCELLER_ROLE(), address(c.lcGov)));
+        assertEq(c.piece.owner(), address(c.lcTimelock));
+        assertTrue(c.gpTimelock.hasRole(c.gpTimelock.PROPOSER_ROLE(), address(c.gpGov)));
+        assertTrue(c.gpTimelock.hasRole(c.gpTimelock.CANCELLER_ROLE(), address(c.gpGov)));
+        assertTrue(c.lcTimelock.hasRole(c.lcTimelock.PROPOSER_ROLE(), address(c.lcGov)));
+        assertTrue(c.lcTimelock.hasRole(c.lcTimelock.CANCELLER_ROLE(), address(c.lcGov)));
     }
 
     function testCanSwapForLarpcoins() public {

@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/governance/TimelockController.sol";
 import "../src/LarpcoinGameFactory.sol";
 import {LarpcoinFactory, LarpcoinArgs} from "../src/subfactories/LarpcoinFactory.sol";
 import {LarpcoinGovernorFactory} from "../src/subfactories/LarpcoinGovernorFactory.sol";
+import {GamePieceGovernorFactory} from "../src/subfactories/GamePieceGovernorFactory.sol";
 import {Larpcoin} from "../src/Larpcoin.sol";
 import {GamePiece} from "../src/GamePiece.sol";
 import {LarpcoinGovernor} from "../src/LarpcoinGovernor.sol";
@@ -27,7 +28,8 @@ contract LarpcoinGovernorTest is Test, SwapsForLarpcoins {
             0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
         );
         LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory();
-        factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory));
+        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory();
+        factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
     }
 
     function buildContracts() internal returns (LarpcoinContracts memory) {
