@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/governance/TimelockController.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ISwapRouter} from "../src/uniswap/ISwapRouter.sol";
 
-import "../src/LarpcoinFactory.sol";
+import "../src/LarpcoinGameFactory.sol";
 import {Larpcoin} from "../src/Larpcoin.sol";
 import {GamePiece} from "../src/GamePiece.sol";
 import {GamePieceGovernor} from "../src/GamePieceGovernor.sol";
@@ -22,7 +22,7 @@ interface IWETH {
 }
 
 interface ISwapTest {
-    function factory() external view returns (LarpcoinFactory);
+    function WETH9() external view returns (address);
 }
 
 abstract contract SwapsForLarpcoins is ISwapTest {
@@ -30,11 +30,11 @@ abstract contract SwapsForLarpcoins is ISwapTest {
 
     function swapForLarpcoins(address larpcoin) internal {
         // Swap for some larpcoins to send to test players.
-        ERC20 weth = ERC20(this.factory().WETH9());
-        IWETH(this.factory().WETH9()).deposit{value: 10 ether}();
+        ERC20 weth = ERC20(this.WETH9());
+        IWETH(this.WETH9()).deposit{value: 10 ether}();
         weth.approve(address(swapRouter), 10 ether);
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
-            tokenIn: this.factory().WETH9(),
+            tokenIn: this.WETH9(),
             tokenOut: larpcoin,
             fee: 3000,
             recipient: address(this),

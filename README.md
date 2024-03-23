@@ -123,6 +123,7 @@ You should rename the houses to fit with the lore of your larpcoin!
 - [x] Uniswap single-sided inital liquidity
 - [x] Mint GamePiece with larpcoins
 - [x] Slowlock contract to receive tokens from minting
+- [ ] Burn liquidity position NFT
 - [ ] Basic next.js larpcoin landing page
 - [ ] Mint from landing page
 - [ ] Buy larpcoin from landing page
