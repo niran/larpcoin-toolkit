@@ -12,6 +12,7 @@ import {LarpcoinFactory, LarpcoinArgs} from "../src/subfactories/LarpcoinFactory
 import {LarpcoinGovernorFactory} from "../src/subfactories/LarpcoinGovernorFactory.sol";
 import {GamePieceGovernorFactory} from "../src/subfactories/GamePieceGovernorFactory.sol";
 import {TimelockControllerFactory} from "../src/subfactories/TimelockControllerFactory.sol";
+import {SlowlockFactory} from "../src/subfactories/SlowlockFactory.sol";
 import {Larpcoin} from "../src/Larpcoin.sol";
 import {GamePiece} from "../src/GamePiece.sol";
 import {LarpcoinGovernor} from "../src/LarpcoinGovernor.sol";
@@ -37,8 +38,9 @@ contract LarpcoinGameFactoryTest is Test {
             0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
         );
         TimelockControllerFactory tcFactory = new TimelockControllerFactory();
+        SlowlockFactory slowlockFactory = new SlowlockFactory();
         LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory(address(tcFactory));
-        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory));        
+        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory), address(slowlockFactory));
 
         factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
         swapRouter = ISwapRouter(0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E);
@@ -61,7 +63,7 @@ contract LarpcoinGameFactoryTest is Test {
             roundLength: 30 * 86400,
             tokenURI: "http://example.com"
         });
-        return factory.build(lcArgs, gpArgs, 86400 /* 1 day */);
+        return factory.build(lcArgs, gpArgs, 86400 /* 1 day */, 1460 /* 4 years */);
     }
 
     function testBuild() public {

@@ -37,7 +37,7 @@ contract LarpcoinGameFactory {
         gpGovFactory = GamePieceGovernorFactory(_gpGovFactory);
     }
 
-    function build(LarpcoinArgs memory lcArgs, GamePieceArgs memory gpArgs, uint256 timelockDelay)
+    function build(LarpcoinArgs memory lcArgs, GamePieceArgs memory gpArgs, uint256 timelockDelay, uint256 halfLifeDays)
         public
         returns (LarpcoinContracts memory)
     {
@@ -51,7 +51,7 @@ contract LarpcoinGameFactory {
         c.lcGov = lcGov;
         c.lcTimelock = lcTimelock;
 
-        GamePieceContracts memory gpc = gpGovFactory.build(gpArgs, timelockDelay, address(larpcoin), address(lcTimelock));
+        GamePieceContracts memory gpc = gpGovFactory.build(gpArgs, timelockDelay, address(larpcoin), address(lcTimelock), halfLifeDays);
 
         c.gpGov = gpc.gov;
         c.gpTimelock = gpc.timelock;
