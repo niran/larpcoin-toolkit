@@ -18,7 +18,7 @@ import {LarpcoinGovernor} from "../src/LarpcoinGovernor.sol";
 import {GamePieceGovernor} from "../src/GamePieceGovernor.sol";
 
 
-contract LarpcoinSetup is Script {
+contract DeployAllFactories is Script {
     function setUp() public {}
 
     function run() public {
@@ -52,18 +52,8 @@ contract LarpcoinSetup is Script {
             timelockDelay: 1 days
         });
 
+        LarpcoinGameFactory factory = LarpcoinGameFactory(0x6115007e9FF5a691174743a68F7b4855Ca190074);
         vm.startBroadcast();
-        LarpcoinFactory lcFactory = new LarpcoinFactory(
-            0x1238536071E1c677A632429e3655c799b22cDA52,
-            0x0227628f3F023bb0B980b67D528571c95c6DaC1c,
-            0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
-        );
-        TimelockControllerFactory tcFactory = new TimelockControllerFactory();
-        SlowlockFactory slowlockFactory = new SlowlockFactory();
-        GamePieceFactory gpFactory = new GamePieceFactory();
-        LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory(address(tcFactory));
-        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory), address(slowlockFactory), address(gpFactory));
-        LarpcoinGameFactory factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
         factory.build(lcArgs, gpArgs, lcGovArgs, gpGovArgs, 1460 /* 4 years in days */);
         vm.stopBroadcast();
     }
