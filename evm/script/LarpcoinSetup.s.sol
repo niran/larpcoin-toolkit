@@ -35,7 +35,7 @@ contract LarpcoinSetup is Script {
         GamePieceArgs memory gpArgs = GamePieceArgs({
             name: "GamePiece",
             symbol: "LGP",
-            cost: 0.001e18,
+            cost: 250_000e18,
             roundLength: 30 * 86400,
             tokenURI: "http://example.com"
         });
