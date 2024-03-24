@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/governance/utils/Votes.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/interfaces/IERC4906.sol";
 
 import {Slowlock} from "./Slowlock.sol";
 
@@ -30,7 +31,7 @@ struct PlayerRecord {
  * Its parameters can be updated by the owner of the NFT contract, which is intended to be the
  * LarpcoinGovernor.
  */
-contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {  
+contract GamePiece is ERC721, ERC721Enumerable, IERC4906, EIP712, Votes, Ownable {  
     // ERC721's name and symbol are private, so we can't edit them. We shadow them instead.
     string _name;
     string _symbol;
@@ -218,6 +219,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
 
     function setTokenURI(string memory tokenURI_) onlyOwner public {
         _tokenURI = tokenURI_;
+        emit BatchMetadataUpdate(1, type(uint256).max);
     }
 
     function setName(string memory name_) onlyOwner public {
@@ -254,7 +256,7 @@ contract GamePiece is ERC721, ERC721Enumerable, EIP712, Votes, Ownable {
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721, ERC721Enumerable)
+        override(ERC721, ERC721Enumerable, IERC165)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
