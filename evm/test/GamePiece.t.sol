@@ -489,4 +489,35 @@ contract GamePieceTest is Test {
         vm.expectRevert();
         piece.setSlowlock(newSlowlock);
     }
+
+    function testOwnerCanSetStreamOnMint() public {
+        vm.prank(owner);
+        piece.setStreamOnMint(false);
+        assertEq(piece.streamOnMint(), false);
+
+        vm.warp(block.timestamp + 1);
+
+        address minter = address(1);
+        larpcoin.transfer(minter, cost);
+
+        vm.startPrank(minter);
+        larpcoin.approve(address(piece), cost);
+        piece.mint();
+        vm.stopPrank();
+
+        assertEq(piece.balanceOf(minter), 1);
+        assertEq(piece.getVotes(minter), 0);
+        assertEq(larpcoin.balanceOf(address(slowlock)), cost);
+        assertEq(larpcoin.balanceOf(minter), 0);
+
+        slowlock.stream();
+        assertLt(larpcoin.balanceOf(address(slowlock)), cost);
+    }
+
+    function testPublicCannotSetStreamOnMint() public {
+        address hacker = address(3);
+        vm.prank(hacker);
+        vm.expectRevert();
+        piece.setStreamOnMint(false);
+    }
 }

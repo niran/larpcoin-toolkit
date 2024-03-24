@@ -43,6 +43,7 @@ contract GamePiece is ERC721, ERC721Enumerable, IERC4906, EIP712, Votes, Ownable
     uint256 immutable public roundLength;
     string _tokenURI;
 
+    bool public streamOnMint = true;
     bool public mintingLocked;
     bool public transferLimitsDisabled;
 
@@ -81,18 +82,23 @@ contract GamePiece is ERC721, ERC721Enumerable, IERC4906, EIP712, Votes, Ownable
         return _symbol;
     }
 
+    function streamToSlowlock() internal {
+        if (streamOnMint) {
+            slowlock.stream();
+        }
+    }
+
     function mint() public {
         ERC20 larpcoinToken = ERC20(larpcoin);
         larpcoinToken.transferFrom(msg.sender, address(slowlock), cost);
-        slowlock.stream();
-
+        streamToSlowlock();
         _mintTo(msg.sender);
     }
 
     function mintPieces(uint256 quantity) public {
         ERC20 larpcoinToken = ERC20(larpcoin);
         larpcoinToken.transferFrom(msg.sender, address(slowlock), cost * quantity);
-        slowlock.stream();
+        streamToSlowlock();
 
         for (uint256 i = 0; i < quantity; i++) {
             _mintTo(msg.sender);
@@ -236,6 +242,10 @@ contract GamePiece is ERC721, ERC721Enumerable, IERC4906, EIP712, Votes, Ownable
 
     function setSlowlock(address slowlock_) onlyOwner public {
         slowlock = Slowlock(slowlock_);
+    }
+
+    function setStreamOnMint(bool streamOnMint_) onlyOwner public {
+        streamOnMint = streamOnMint_;
     }
 
     function setMintingLocked(bool isLocked) onlyOwner public {
