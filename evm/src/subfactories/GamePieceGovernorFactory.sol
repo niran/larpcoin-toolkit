@@ -6,11 +6,11 @@ import "@openzeppelin/contracts/governance/TimelockController.sol";
 import {TimelockControllerFactory} from "./TimelockControllerFactory.sol";
 import {SlowlockFactory} from "./SlowlockFactory.sol";
 import {GamePieceFactory, GamePieceArgs} from "./GamePieceFactory.sol";
+import {GovernanceArgs} from "./GovernanceArgs.sol";
 import {GamePieceGovernor} from "../GamePieceGovernor.sol";
 import {GamePiece} from "../GamePiece.sol";
 import {Slowlock} from "../Slowlock.sol";
 import {Larpcoin} from "../Larpcoin.sol";
-
 
 
 struct GamePieceContracts {
@@ -32,13 +32,13 @@ contract GamePieceGovernorFactory {
         gpFactory = GamePieceFactory(_gpFactory);
     }
 
-function build(GamePieceArgs memory gpArgs, uint256 timelockDelay, address larpcoin, address lcTimelock, uint256 halfLifeDays) public returns (GamePieceContracts memory) {
+function build(GamePieceArgs memory gpArgs, GovernanceArgs memory govArgs, address larpcoin, address lcTimelock, uint256 halfLifeDays) public returns (GamePieceContracts memory) {
         GamePieceContracts memory gpc;
-        gpc.timelock = tcFactory.build(timelockDelay);
+        gpc.timelock = tcFactory.build(govArgs.timelockDelay);
         gpc.slowlock = slowlockFactory.build(lcTimelock, address(gpc.timelock), larpcoin, halfLifeDays);
         gpc.piece = gpFactory.build(gpArgs, larpcoin, lcTimelock, address(gpc.slowlock));
         
-        gpc.gov = new GamePieceGovernor(gpc.piece, gpc.timelock);
+        gpc.gov = new GamePieceGovernor(gpc.piece, gpc.timelock, govArgs.votingDelay, govArgs.votingPeriod, govArgs.proposalThreshold);
         gpc.timelock.grantRole(gpc.timelock.PROPOSER_ROLE(), address(gpc.gov));
         gpc.timelock.grantRole(gpc.timelock.CANCELLER_ROLE(), address(gpc.gov));
         gpc.timelock.revokeRole(gpc.timelock.DEFAULT_ADMIN_ROLE(), address(this));

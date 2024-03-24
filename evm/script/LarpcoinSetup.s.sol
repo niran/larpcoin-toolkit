@@ -10,6 +10,7 @@ import {LarpcoinFactory, LarpcoinArgs} from "../src/subfactories/LarpcoinFactory
 import {LarpcoinGovernorFactory} from "../src/subfactories/LarpcoinGovernorFactory.sol";
 import {GamePieceFactory} from "../src/subfactories/GamePieceFactory.sol";
 import {GamePieceGovernorFactory} from "../src/subfactories/GamePieceGovernorFactory.sol";
+import {GovernanceArgs} from "../src/subfactories/GovernanceArgs.sol";
 import {TimelockControllerFactory} from "../src/subfactories/TimelockControllerFactory.sol";
 import {SlowlockFactory} from "../src/subfactories/SlowlockFactory.sol";
 import {GamePiece} from "../src/GamePiece.sol";
@@ -38,6 +39,18 @@ contract LarpcoinSetup is Script {
             roundLength: 30 * 86400,
             tokenURI: "http://example.com"
         });
+        GovernanceArgs memory lcGovArgs = GovernanceArgs({
+            votingDelay: 7200, // 1 day of blocks
+            votingPeriod: 50400, // 1 week of blocks
+            proposalThreshold: 1000e18,
+            timelockDelay: 1 days
+        });
+        GovernanceArgs memory gpGovArgs = GovernanceArgs({
+            votingDelay: 7200, // 1 day of blocks
+            votingPeriod: 50400, // 1 week of blocks
+            proposalThreshold: 1,
+            timelockDelay: 1 days
+        });
 
         vm.startBroadcast();
         LarpcoinFactory lcFactory = new LarpcoinFactory(
@@ -51,7 +64,7 @@ contract LarpcoinSetup is Script {
         LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory(address(tcFactory));
         GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory), address(slowlockFactory), address(gpFactory));
         LarpcoinGameFactory factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
-        factory.build(lcArgs, gpArgs, 86400 /* 1 day */, 1460 /* 4 years */);
+        factory.build(lcArgs, gpArgs, lcGovArgs, gpGovArgs, 1460 /* 4 years in days */);
         vm.stopBroadcast();
     }
 }

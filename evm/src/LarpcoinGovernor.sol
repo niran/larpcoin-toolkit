@@ -9,9 +9,9 @@ import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 
 contract LarpcoinGovernor is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorTimelockControl {
-    constructor(IVotes _token, TimelockController _timelock)
+    constructor(IVotes _token, TimelockController _timelock, uint48 initialVotingDelay, uint32 initialVotingPeriod, uint256 initialProposalThreshold)
         Governor("LarpcoinGovernor")
-        GovernorSettings(7200 /* 1 day */, 50400 /* 1 week */, 1000e18)
+        GovernorSettings(initialVotingDelay, initialVotingPeriod, initialProposalThreshold)
         GovernorVotes(_token)
         GovernorTimelockControl(_timelock)
     {}

@@ -8,6 +8,7 @@ import '@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol';
 import {LarpcoinFactory, LarpcoinArgs} from "./subfactories/LarpcoinFactory.sol";
 import {LarpcoinGovernorFactory} from "./subfactories/LarpcoinGovernorFactory.sol";
 import {GamePieceGovernorFactory, GamePieceArgs, GamePieceContracts} from "./subfactories/GamePieceGovernorFactory.sol";
+import {GovernanceArgs} from "./subfactories/GovernanceArgs.sol";
 
 import {Larpcoin} from "./Larpcoin.sol";
 import {Slowlock} from "./Slowlock.sol";
@@ -38,28 +39,38 @@ contract LarpcoinGameFactory {
         gpGovFactory = GamePieceGovernorFactory(_gpGovFactory);
     }
 
-    function build(LarpcoinArgs memory lcArgs, GamePieceArgs memory gpArgs, uint256 timelockDelay, uint256 halfLifeDays)
-        public
-        returns (LarpcoinContracts memory)
-    {
-        LarpcoinContracts memory c;
-  
+    function buildLarpcoin(LarpcoinContracts memory c, LarpcoinArgs memory lcArgs) internal returns (uint256) {
         (Larpcoin larpcoin, IUniswapV3Pool pool, uint256 actualLarpcoinsInPool) = lcFactory.build(lcArgs);
         c.larpcoin = larpcoin;
         c.pool = pool;
-         
-        (LarpcoinGovernor lcGov, TimelockController lcTimelock) = lcGovFactory.build(address(larpcoin), timelockDelay);
+        return actualLarpcoinsInPool;
+    }
+
+    function buildLarpcoinGovernor(LarpcoinContracts memory c, GovernanceArgs memory lcGovArgs) internal {
+        (LarpcoinGovernor lcGov, TimelockController lcTimelock) = lcGovFactory.build(address(c.larpcoin), lcGovArgs);
         c.lcGov = lcGov;
         c.lcTimelock = lcTimelock;
+    }
 
-        GamePieceContracts memory gpc = gpGovFactory.build(gpArgs, timelockDelay, address(larpcoin), address(lcTimelock), halfLifeDays);
-
+    function buildGamePieceGovernor(LarpcoinContracts memory c, GamePieceArgs memory gpArgs, GovernanceArgs memory gpGovArgs, uint256 halfLifeDays) internal {
+        GamePieceContracts memory gpc = gpGovFactory.build(gpArgs, gpGovArgs, address(c.larpcoin), address(c.lcTimelock), halfLifeDays);
         c.gpGov = gpc.gov;
         c.gpTimelock = gpc.timelock;
         c.slowlock = gpc.slowlock;
         c.piece = gpc.piece;
+    }
 
-        larpcoin.transfer(address(c.slowlock), lcArgs.totalSupply - actualLarpcoinsInPool);
+    function build(LarpcoinArgs memory lcArgs, GamePieceArgs memory gpArgs, GovernanceArgs memory lcGovArgs, GovernanceArgs memory gpGovArgs, uint256 halfLifeDays)
+        public
+        returns (LarpcoinContracts memory)
+    {
+        LarpcoinContracts memory c;
+
+        uint256 actualLarpcoinsInPool = buildLarpcoin(c, lcArgs);
+        buildLarpcoinGovernor(c, lcGovArgs);
+        buildGamePieceGovernor(c, gpArgs, gpGovArgs, halfLifeDays);
+
+        c.larpcoin.transfer(address(c.slowlock), lcArgs.totalSupply - actualLarpcoinsInPool);
 
         return c;
     }

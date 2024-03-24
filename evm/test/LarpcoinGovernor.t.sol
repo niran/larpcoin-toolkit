@@ -9,6 +9,7 @@ import "../src/LarpcoinGameFactory.sol";
 import {LarpcoinFactory, LarpcoinArgs} from "../src/subfactories/LarpcoinFactory.sol";
 import {LarpcoinGovernorFactory} from "../src/subfactories/LarpcoinGovernorFactory.sol";
 import {GamePieceGovernorFactory} from "../src/subfactories/GamePieceGovernorFactory.sol";
+import {GovernanceArgs} from "../src/subfactories/GovernanceArgs.sol";
 import {GamePieceFactory} from "../src/subfactories/GamePieceFactory.sol";
 import {TimelockControllerFactory} from "../src/subfactories/TimelockControllerFactory.sol";
 import {SlowlockFactory} from "../src/subfactories/SlowlockFactory.sol";
@@ -57,8 +58,19 @@ contract LarpcoinGovernorTest is Test, SwapsForLarpcoins {
             roundLength: 30 * 86400,
             tokenURI: "http://example.com"
         });
-        return factory.build(lcArgs, gpArgs, 86400 /* 1 day */, 1460 /* 4 years */);
-    }
+        GovernanceArgs memory lcGovArgs = GovernanceArgs({
+            votingDelay: 7200, // 1 day of blocks
+            votingPeriod: 50400, // 1 week of blocks
+            proposalThreshold: 1000e18,
+            timelockDelay: 1 days
+        });
+        GovernanceArgs memory gpGovArgs = GovernanceArgs({
+            votingDelay: 7200, // 1 day of blocks
+            votingPeriod: 50400, // 1 week of blocks
+            proposalThreshold: 1,
+            timelockDelay: 1 days
+        });
+        return factory.build(lcArgs, gpArgs, lcGovArgs, gpGovArgs, 1460 /* 4 years in days */);    }
 
     function executeViaLCGov(LarpcoinContracts memory c, address target, uint256 value, bytes memory data, string memory description) internal {
         address proposer = address(1);
