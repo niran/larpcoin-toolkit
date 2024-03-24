@@ -2,6 +2,7 @@
 pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/governance/TimelockController.sol";
+import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol';
 
 import {LarpcoinFactory, LarpcoinArgs} from "./subfactories/LarpcoinFactory.sol";
@@ -27,9 +28,9 @@ struct LarpcoinContracts {
 }
 
 contract LarpcoinGameFactory {
-    LarpcoinFactory lcFactory;
-    LarpcoinGovernorFactory lcGovFactory;
-    GamePieceGovernorFactory gpGovFactory;
+    LarpcoinFactory public lcFactory;
+    LarpcoinGovernorFactory public lcGovFactory;
+    GamePieceGovernorFactory public gpGovFactory;
 
     constructor(address _lcFactory, address _lcGovFactory, address _gpGovFactory) {
         lcFactory = LarpcoinFactory(_lcFactory);

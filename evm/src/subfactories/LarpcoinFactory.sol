@@ -18,6 +18,7 @@ struct LarpcoinArgs {
     string symbol;
     uint208 totalSupply;
     uint208 liquiditySupply;
+    address liquidityDestination;
     uint160 wethSqrtPriceX96;
     uint160 larpcoinSqrtPriceX96;
 }
@@ -66,7 +67,7 @@ contract LarpcoinFactory is PoolInitializer {
         return (IUniswapV3Pool(poolAddress), poolArgs);
     }
 
-    function getMintParams(address larpcoin, LarpcoinArgs memory lcArgs, IUniswapV3Pool pool, PoolArgs memory poolArgs, address recipient) public returns (INonfungiblePositionManager.MintParams memory) {
+    function getMintParams(address larpcoin, LarpcoinArgs memory lcArgs, IUniswapV3Pool pool, PoolArgs memory poolArgs) public returns (INonfungiblePositionManager.MintParams memory) {
         (, int24 tick, , , , ,) = pool.slot0();
         int24 tickSpacing = pool.tickSpacing();
 
@@ -88,26 +89,26 @@ contract LarpcoinFactory is PoolInitializer {
             amount1Desired: poolArgs.amount1,
             amount0Min: 0,
             amount1Min: 0,
-            recipient: recipient,
+            recipient: lcArgs.liquidityDestination,
             deadline: block.timestamp
         });
     }
 
-    function initializeLiquidity(address larpcoin, LarpcoinArgs memory lcArgs, address recipient) public returns (IUniswapV3Pool, uint256) {
+    function initializeLiquidity(address larpcoin, LarpcoinArgs memory lcArgs) public returns (IUniswapV3Pool, uint256, uint256) {
         (IUniswapV3Pool pool, PoolArgs memory poolArgs) = createPool(larpcoin, lcArgs);
-        INonfungiblePositionManager.MintParams memory params = getMintParams(larpcoin, lcArgs, pool, poolArgs, recipient);
-        (, , uint256 amount0Actual, uint256 amount1Actual) = positionManager.mint(params);
+        INonfungiblePositionManager.MintParams memory params = getMintParams(larpcoin, lcArgs, pool, poolArgs);
+        (uint256 tokenId, , uint256 amount0Actual, uint256 amount1Actual) = positionManager.mint(params);
         
         if (amount0Actual != 0) {
-            return (pool, amount0Actual);
+            return (pool, amount0Actual, tokenId);
         }
 
-        return (pool, amount1Actual);
+        return (pool, amount1Actual, tokenId);
     }
 
     function build(LarpcoinArgs memory lcArgs) public returns (Larpcoin, IUniswapV3Pool, uint256) {
         Larpcoin larpcoin = new Larpcoin(lcArgs.name, lcArgs.symbol, lcArgs.totalSupply);
-        (IUniswapV3Pool pool, uint256 actualLarpcoinsInPool) = initializeLiquidity(address(larpcoin), lcArgs, msg.sender);
+        (IUniswapV3Pool pool, uint256 actualLarpcoinsInPool, uint256 tokenId) = initializeLiquidity(address(larpcoin), lcArgs);
         larpcoin.transfer(msg.sender, lcArgs.totalSupply - actualLarpcoinsInPool);
         return (larpcoin, pool, actualLarpcoinsInPool);
     }

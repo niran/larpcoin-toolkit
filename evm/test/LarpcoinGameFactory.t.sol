@@ -29,6 +29,9 @@ interface IWETH {
 contract LarpcoinGameFactoryTest is Test {
     LarpcoinGameFactory public factory;
     ISwapRouter public swapRouter;
+    IERC721 positionManager;
+    uint256 burnAddressStartBalance;
+    address public burnAddress = address(0xdead);
     address public WETH9 = 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14;
 
     function setUp() public {
@@ -44,6 +47,8 @@ contract LarpcoinGameFactoryTest is Test {
 
         factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
         swapRouter = ISwapRouter(0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E);
+        positionManager = IERC721(address(factory.lcFactory().positionManager()));
+        burnAddressStartBalance = positionManager.balanceOf(burnAddress);
     }
 
     function buildContracts() internal returns (LarpcoinContracts memory) {
@@ -54,7 +59,8 @@ contract LarpcoinGameFactoryTest is Test {
             liquiditySupply: 500_000_000e18,
             // Prices when larpcoin market cap is 10 ETH
             larpcoinSqrtPriceX96: 7922816251426434139029504,
-            wethSqrtPriceX96: 792281625142643375935439503360000
+            wethSqrtPriceX96: 792281625142643375935439503360000,
+            liquidityDestination: burnAddress
         });
         GamePieceArgs memory gpArgs = GamePieceArgs({
             name: "GamePiece",
@@ -72,6 +78,12 @@ contract LarpcoinGameFactoryTest is Test {
         assertEq(c.larpcoin.totalSupply(), 1_000_000_000e18);
         assertGe(c.larpcoin.balanceOf(address(c.slowlock)), 500_000_000e18);
         assertGe(c.larpcoin.balanceOf(address(c.pool)), 499_999_999e18);
+
+        assertEq(positionManager.balanceOf(address(factory)), 0);
+        assertEq(positionManager.balanceOf(address(factory.lcFactory())), 0);
+        assertEq(positionManager.balanceOf(address(this)), 0);
+        assertEq(positionManager.balanceOf(burnAddress), burnAddressStartBalance + 1);
+        
         assertEq(c.piece.owner(), address(c.lcTimelock));
         assertTrue(c.gpTimelock.hasRole(c.gpTimelock.PROPOSER_ROLE(), address(c.gpGov)));
         assertTrue(c.gpTimelock.hasRole(c.gpTimelock.CANCELLER_ROLE(), address(c.gpGov)));
