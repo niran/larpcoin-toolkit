@@ -10,6 +10,7 @@ import {ISwapRouter} from "../src/uniswap/ISwapRouter.sol";
 import "../src/LarpcoinGameFactory.sol";
 import {LarpcoinFactory, LarpcoinArgs} from "../src/subfactories/LarpcoinFactory.sol";
 import {LarpcoinGovernorFactory} from "../src/subfactories/LarpcoinGovernorFactory.sol";
+import {GamePieceFactory} from "../src/subfactories/GamePieceFactory.sol";
 import {GamePieceGovernorFactory} from "../src/subfactories/GamePieceGovernorFactory.sol";
 import {TimelockControllerFactory} from "../src/subfactories/TimelockControllerFactory.sol";
 import {SlowlockFactory} from "../src/subfactories/SlowlockFactory.sol";
@@ -32,8 +33,9 @@ contract GamePieceGovernorTest is Test, SwapsForLarpcoins {
         );
         TimelockControllerFactory tcFactory = new TimelockControllerFactory();
         SlowlockFactory slowlockFactory = new SlowlockFactory();
+        GamePieceFactory gpFactory = new GamePieceFactory();
         LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory(address(tcFactory));
-        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory), address(slowlockFactory));
+        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory), address(slowlockFactory), address(gpFactory));
         factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
     }
 

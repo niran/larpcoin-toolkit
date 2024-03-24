@@ -11,6 +11,7 @@ import "../src/LarpcoinGameFactory.sol";
 import {LarpcoinFactory, LarpcoinArgs} from "../src/subfactories/LarpcoinFactory.sol";
 import {LarpcoinGovernorFactory} from "../src/subfactories/LarpcoinGovernorFactory.sol";
 import {GamePieceGovernorFactory} from "../src/subfactories/GamePieceGovernorFactory.sol";
+import {GamePieceFactory} from "../src/subfactories/GamePieceFactory.sol";
 import {TimelockControllerFactory} from "../src/subfactories/TimelockControllerFactory.sol";
 import {SlowlockFactory} from "../src/subfactories/SlowlockFactory.sol";
 import {Larpcoin} from "../src/Larpcoin.sol";
@@ -42,8 +43,9 @@ contract LarpcoinGameFactoryTest is Test {
         );
         TimelockControllerFactory tcFactory = new TimelockControllerFactory();
         SlowlockFactory slowlockFactory = new SlowlockFactory();
+        GamePieceFactory gpFactory = new GamePieceFactory();
         LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory(address(tcFactory));
-        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory), address(slowlockFactory));
+        GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory), address(slowlockFactory), address(gpFactory));
 
         factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
         swapRouter = ISwapRouter(0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E);
@@ -83,7 +85,7 @@ contract LarpcoinGameFactoryTest is Test {
         assertEq(positionManager.balanceOf(address(factory.lcFactory())), 0);
         assertEq(positionManager.balanceOf(address(this)), 0);
         assertEq(positionManager.balanceOf(burnAddress), burnAddressStartBalance + 1);
-        
+
         assertEq(c.piece.owner(), address(c.lcTimelock));
         assertTrue(c.gpTimelock.hasRole(c.gpTimelock.PROPOSER_ROLE(), address(c.gpGov)));
         assertTrue(c.gpTimelock.hasRole(c.gpTimelock.CANCELLER_ROLE(), address(c.gpGov)));
