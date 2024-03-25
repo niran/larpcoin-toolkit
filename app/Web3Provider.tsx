@@ -31,7 +31,11 @@ const config = createConfig(
 
 const queryClient = new QueryClient();
 
-export const Web3Provider = ({ children }) => {
+export const Web3Provider = ({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
