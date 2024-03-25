@@ -1,8 +1,8 @@
-import { useAccount, useBlockNumber, useReadContracts, useWriteContract } from 'wagmi';
+import { useAccount, useBlockNumber, useReadContracts, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import config from "../config";
 import LarpcoinMetadata from "../contracts/Larpcoin.json";
 import GamePieceMetadata from "../contracts/GamePiece.json";
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useModal } from 'connectkit';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -46,19 +46,27 @@ export default function GamePieceMintButton() {
 
   const [balance, allowance, cost] = result.data ? result.data.map(x => x.result) as bigint[] : [undefined, undefined, undefined];
   const [mintState, setMintState] = useState<"viewing"|"approving"|"minting">("viewing");
-  const { writeContract: writeContractApprove } = useWriteContract();
-  const { writeContract: writeContractMint } = useWriteContract();
+  const { writeContract: writeContractApprove, data: approveHash } = useWriteContract();
+  const { writeContract: writeContractMint, data: mintHash } = useWriteContract();
+  
+  const approveResult = useWaitForTransactionReceipt({
+    hash: approveHash,
+  });
+  
+  const mintResult = useWaitForTransactionReceipt({
+    hash: mintHash,
+  });
 
-  const sendMint = () => {
+  const sendMint = useCallback(() => {
     setMintState("minting");
     writeContractMint({
       address: config.gamePieceAddress as `0x${string}`,
       abi: GamePieceMetadata.abi,
       functionName: "mintAndPlay",
     }, {
-      onSettled: () => setMintState("viewing"),
+      onError: () => setMintState("viewing"),
     });
-  }
+  }, [writeContractMint]);
   
   const sendApprove = () => {
     setMintState("approving");
@@ -68,10 +76,22 @@ export default function GamePieceMintButton() {
       functionName: "approve",
       args: [config.gamePieceAddress, cost],
     }, {
-      onSuccess: sendMint,
       onError: () => setMintState("viewing"),
     });
   }
+
+  useEffect(() => {
+    if (mintState === "approving" && approveResult.status !== "pending") {
+      sendMint();
+    }
+  }, [mintState, approveResult, sendMint]);
+
+
+  useEffect(() => {
+    if (mintState === "minting" && mintResult.status !== "pending") {
+      setMintState("viewing");
+    }
+  }, [mintState, mintResult]);
   
   async function mintGamePiece(e: React.FormEvent<HTMLButtonElement>) {
     e.preventDefault();
