@@ -1,12 +1,13 @@
-import { useAccount, useBlockNumber, useReadContracts } from 'wagmi';
-import config from "../config";
-import LarpcoinMetadata from "../contracts/Larpcoin.json";
-import GamePieceMetadata from "../contracts/GamePiece.json";
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import Image from "next/image";
-import GamePieceMintButton from "./GamePieceMintButton";
 import { formatUnits } from 'viem';
+import { useAccount, useBlockNumber, useReadContracts } from 'wagmi';
+
+import config from "../config";
+import LarpcoinMetadata from "../contracts/Larpcoin.json";
+import GamePieceMetadata from "../contracts/GamePiece.json";
+import GamePieceMintButton from "./GamePieceMintButton";
 
 
 export default function GamePieceCard() {
@@ -41,7 +42,7 @@ export default function GamePieceCard() {
     }]
   });
 
-  // Fetch data every block.
+  // Fetch data every polling interval.
   useEffect(() => { 
     queryClient.invalidateQueries({ queryKey: result.queryKey }); 
   }, [blockNumber, queryClient, result.queryKey]);
@@ -67,13 +68,18 @@ export default function GamePieceCard() {
     activeUntil = new Date(Number(playerRecord[1] + usableBalance * roundLength) * 1000);
   }
 
+  let cost;
+  if (costData !== undefined) {
+    cost = Number(formatUnits(costData.cost, Number(costData.decimals))).toLocaleString();
+  }
+
   return (
     <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
       <form className="card-body flex-col items-center">
         <Image src="/pickaxe.png" alt="Pickaxe" width="250" height="250" />
         <GamePieceMintButton />
         <div className="text-green-500">
-          {costData !== undefined && `${Number(formatUnits(costData.cost, Number(costData.decimals))).toLocaleString()} ${config.larpcoinName}`}
+          {cost !== undefined && `${cost} ${config.larpcoinName}`}
         </div>
         <div className="text-green-500">
           {balance !== undefined && `You have ${balance} ${config.gamePieceName}${balance > 1 ? "s" : ""}. `}

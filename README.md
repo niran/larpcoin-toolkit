@@ -125,19 +125,24 @@ You should rename the houses to fit with the lore of your larpcoin!
 - [x] Slowlock contract to receive tokens from minting
 - [X] Break apart contract factories to make them fit within the contract size limit
 - [X] Burn liquidity position NFT
-- [ ] Basic next.js larpcoin landing page
-- [ ] Mint from landing page
-- [ ] Buy larpcoin from landing page
+- [X] Basic next.js larpcoin landing page
+- [X] Mint from landing page
+- [X] Buy larpcoin from landing page
 - [ ] Register to vote from landing page
 - [ ] Coinbase Onchain Verifications integration
-- [ ] Mint from Farcaster frame
-- [ ] Buy larpcoin from Farcaster frame
 
 **Factions**
 
 - [ ] Goalposts contract to accept incoming larpcoins, ETH or USDC, swaps for the larpcoin and deposits in slowlock
-- [ ] FactionGamePiece contract that lets minters support a specific factionw with their mint 
+- [ ] FactionGamePiece contract that lets minters support a specific faction with their mint 
 - [ ] Admin: UI to accept larpcoins from goalposts
 - [ ] PvP: Specify which faction's goalposts to credit when minting
 - [ ] PvP: Sorting Hat contract for auto-assigning factions
 - [ ] Separate examples for PvP and PvE
+
+**Easy Issues**
+
+If you're looking for ways to contribute, these are the easiest issues to start with:
+
+- [ ] Mint from Farcaster frame
+- [ ] Buy larpcoin from Farcaster frame

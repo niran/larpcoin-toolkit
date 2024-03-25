@@ -3,6 +3,7 @@ const config = {
   gamePieceAddress: "0x80D843046E899cC06B195CD0C0f553868c3ea28A",
   larpcoinName: "$CRAFT",
   gamePieceName: "Pickaxe",
+  uniswapChain: "sepolia",
 };
 
 export default config;

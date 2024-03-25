@@ -1,10 +1,11 @@
+import { useModal } from 'connectkit';
+import { useCallback, useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAccount, useBlockNumber, useReadContracts, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+
 import config from "../config";
 import LarpcoinMetadata from "../contracts/Larpcoin.json";
 import GamePieceMetadata from "../contracts/GamePiece.json";
-import { useCallback, useEffect, useState } from 'react';
-import { useModal } from 'connectkit';
-import { useQueryClient } from '@tanstack/react-query';
 
 
 export default function GamePieceMintButton() {
@@ -39,7 +40,7 @@ export default function GamePieceMintButton() {
     ],
   });
 
-  // Fetch data every block.
+  // Fetch data every polling interval.
   useEffect(() => { 
     queryClient.invalidateQueries({ queryKey: result.queryKey }); 
   }, [blockNumber, queryClient, result.queryKey]);

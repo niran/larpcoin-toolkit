@@ -1,6 +1,7 @@
 "use client";
 import ConnectWalletButton from "./components/ConnectWalletButton";
 import GamePieceCard from "./components/GamePieceCard";
+import LarpcoinBalance from "./components/LarpcoinBalance";
 import config from "./config";
 
 export default function Home() {
@@ -23,11 +24,12 @@ export default function Home() {
             <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
               <form className="card-body flex-col items-center">
                 <div className="form-control mt-6">
-                  <a href={`https://app.uniswap.org/swap?outputCurrency=${config.larpcoinAddress}&chain=sepolia`} className="btn btn-primary">
+                  <a target="_blank" href={`https://app.uniswap.org/swap?outputCurrency=${config.larpcoinAddress}&chain=${config.uniswapChain}`} className="btn btn-primary">
                     Swap for $CRAFT
                   </a>
                 </div>
                 <div className="text-green-500">$CRAFT is on Sepolia</div>
+                <LarpcoinBalance />
               </form>
             </div>
           </div>
