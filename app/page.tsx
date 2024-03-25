@@ -1,4 +1,7 @@
+"use client";
 import Image from "next/image";
+import ConnectWalletButton from "./components/ConnectWalletButton";
+import config from "./config";
 
 export default function Home() {
   return (
@@ -6,7 +9,7 @@ export default function Home() {
       <div className="navbar bg-base-100">
         <div className="navbar-start"></div>
         <div className="navbar-end">
-          <a className="btn btn-secondary">Connect Wallet</a>
+          <ConnectWalletButton />
         </div>
       </div>
 
@@ -18,10 +21,13 @@ export default function Home() {
               <p className="py-6">The testnet memecoin for builders and friends</p>
             </div>
             <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-              <form className="card-body">
+              <form className="card-body flex-col items-center">
                 <div className="form-control mt-6">
-                  <button className="btn btn-primary">Swap for $CRAFT</button>
+                  <a href={`https://app.uniswap.org/swap?outputCurrency=${config.larpcoinAddress}&chain=sepolia`} className="btn btn-primary">
+                    Swap for $CRAFT
+                  </a>
                 </div>
+                <div className="text-green-500">$CRAFT is on Sepolia</div>
               </form>
             </div>
           </div>
@@ -38,6 +44,7 @@ export default function Home() {
                 <div className="form-control mt-6">
                   <button className="btn btn-primary">Mint a Pickaxe</button>
                 </div>
+                <div className="text-green-500">250,000 $CRAFT</div>
               </form>
             </div>
           </div>
@@ -70,6 +77,9 @@ export default function Home() {
                 </p>
               </div>
             </div>
+          </div>
+          <div className="text-center italic my-4">
+            <p><a href="https://github.com/niran/larpcoin-toolkit">learn more about larpcoins</a></p>
           </div>
         </div>
       </div>
