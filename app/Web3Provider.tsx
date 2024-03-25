@@ -11,9 +11,10 @@ const config = createConfig(
     transports: {
       // RPC URL for each chain
       [sepolia.id]: http(
-        "https://ethereum-sepolia-rpc.publicnode.com",
+        "https://public.stackup.sh/api/v1/node/ethereum-sepolia",
       ),
     },
+    pollingInterval: 24_000,
 
     // Required API Keys
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",

@@ -129,6 +129,14 @@ contract GamePiece is ERC721, ERC721Enumerable, IERC4906, EIP712, Votes, Ownable
         return elapsedRounds + playerRecords[player].activationBalance + 1;
     }
 
+    function activeUntil(address player) public view returns (uint256) {
+        if (!playerRecords[player].isActive) {
+            return 0;
+        }
+        uint256 usableBalance = balanceOf(player) - playerRecords[player].activationBalance;
+        return playerRecords[player].activationTime + usableBalance * roundLength;
+    }
+
     function _update(address to, uint256 tokenId, address auth)
         internal
         override(ERC721, ERC721Enumerable)

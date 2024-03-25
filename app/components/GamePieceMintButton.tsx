@@ -1,12 +1,15 @@
-import { useAccount, useReadContracts, useWriteContract } from 'wagmi';
+import { useAccount, useBlockNumber, useReadContracts, useWriteContract } from 'wagmi';
 import config from "../config";
 import LarpcoinMetadata from "../contracts/Larpcoin.json";
 import GamePieceMetadata from "../contracts/GamePiece.json";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useModal } from 'connectkit';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 export default function GamePieceMintButton() {
+  const queryClient = useQueryClient();
+  const { data: blockNumber } = useBlockNumber({ watch: true });
   const account = useAccount();
   const { setOpen } = useModal();
 
@@ -34,14 +37,21 @@ export default function GamePieceMintButton() {
         functionName: "cost",
       }
     ],
-  })
+  });
+
+  // Fetch data every block.
+  useEffect(() => { 
+    queryClient.invalidateQueries({ queryKey: result.queryKey }); 
+  }, [blockNumber, queryClient, result.queryKey]);
+
   const [balance, allowance, cost] = result.data ? result.data.map(x => x.result) as bigint[] : [undefined, undefined, undefined];
   const [mintState, setMintState] = useState<"viewing"|"approving"|"minting">("viewing");
-  const { data: hash, writeContract } = useWriteContract();
+  const { writeContract: writeContractApprove } = useWriteContract();
+  const { writeContract: writeContractMint } = useWriteContract();
 
   const sendMint = () => {
     setMintState("minting");
-    writeContract({
+    writeContractMint({
       address: config.gamePieceAddress as `0x${string}`,
       abi: GamePieceMetadata.abi,
       functionName: "mintAndPlay",
@@ -52,7 +62,7 @@ export default function GamePieceMintButton() {
   
   const sendApprove = () => {
     setMintState("approving");
-    writeContract({
+    writeContractApprove({
       address: config.larpcoinAddress as `0x${string}`,
       abi: LarpcoinMetadata.abi,
       functionName: "approve",
