@@ -78,7 +78,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="text-center italic my-4">
+          <div className="text-center italic my-4 underline">
             <p><a href="https://github.com/niran/larpcoin-toolkit">learn more about larpcoins</a></p>
           </div>
         </div>
