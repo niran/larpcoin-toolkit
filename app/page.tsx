@@ -3,6 +3,7 @@ import ConnectWalletButton from "./components/ConnectWalletButton";
 import DelegateButton from "./components/DelegateButton";
 import GamePieceCard from "./components/GamePieceCard";
 import LarpcoinBalance from "./components/LarpcoinBalance";
+import SlowlockStreamRate from "./components/SlowlockStreamRate";
 import config from "./config";
 
 export default function Home() {
@@ -65,6 +66,7 @@ export default function Home() {
                   You can give out your own $CRAFT or vote in
                   the <a target="_blank" className="underline" href="https://www.tally.xyz/gov/crafters">House of Crafters</a> to
                   award $CRAFT from the stream. One player, one vote.
+                  $CRAFT is currently streaming at <SlowlockStreamRate /> $CRAFT per month, and the stream slows exponentially as it runs out.
                 </p>
                 <DelegateButton governor="GamePiece" />
               </div>
