@@ -29,7 +29,11 @@ export default function Home() {
                     Swap for $CRAFT
                   </a>
                 </div>
-                <div className="text-green-500">$CRAFT is on Sepolia</div>
+                <div className="text-green-500">
+                  <a target="_blank" className="underline" href="https://sepolia.etherscan.io/token/0xaab56a449b0345ec064caccf161e06613437bc83">
+                    $CRAFT is on Sepolia
+                  </a>
+                </div>
                 <LarpcoinBalance />
               </form>
             </div>
