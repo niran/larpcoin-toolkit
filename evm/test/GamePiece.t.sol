@@ -95,6 +95,7 @@ contract GamePieceTest is Test {
 
         assertEq(piece.balanceOf(minter), 1);
         assertEq(piece.getVotes(minter), 1);
+        assertEq(piece.activeUntil(minter), block.timestamp + 30 * 86400);
         assertGt(larpcoin.balanceOf(address(slowlock)), 0);
         assertEq(larpcoin.balanceOf(minter), 0);
     }
@@ -278,7 +279,12 @@ contract GamePieceTest is Test {
         piece.mint();
         piece.mint();
         piece.delegate(minter);
+
+        assertEq(piece.activeUntil(minter), block.timestamp + 60 * 86400);
         piece.transferFrom(minter, recipient, 1);
+        assertEq(piece.activeUntil(minter), block.timestamp + 30 * 86400);
+
+
         vm.stopPrank();
 
         assertEq(piece.getVotes(minter), 1);
@@ -319,6 +325,7 @@ contract GamePieceTest is Test {
         accounts[0] = minter;
         piece.expirePlayers(accounts);
         assertEq(piece.getVotes(minter), 0);
+        assertEq(piece.activeUntil(minter), 0);
     }
 
     function testPlayerDoesntExpireAfterRoundIfTheyMint() public {
@@ -386,6 +393,7 @@ contract GamePieceTest is Test {
         assertEq(piece.getVotes(minter), 1);
         (, uint256 updatedActivationTime, , ) = piece.playerRecords(minter);
         assertGt(updatedActivationTime, activationTime);
+        assertEq(piece.activeUntil(minter), updatedActivationTime + 30 * 86400);
     }
 
     function testReactivationExpires() public {
