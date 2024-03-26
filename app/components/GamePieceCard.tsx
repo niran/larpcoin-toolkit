@@ -81,7 +81,7 @@ export default function GamePieceCard() {
         <div className="text-green-500">
           {balance !== undefined && balance > 0 && `You have ${balance} ${config.gamePieceName}${balance > 1 ? "s" : ""}. `}
           {balance !== undefined && Number(balance) === 0 && `You have no ${config.gamePieceName}s. `}
-          {activeUntil !== undefined && `You will play until ${activeUntil.toDateString()}.`}
+          {activeUntil !== undefined && `You can play until ${activeUntil.toDateString()}.`}
         </div>
       </form>
     </div>
