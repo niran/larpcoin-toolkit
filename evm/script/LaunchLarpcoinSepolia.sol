@@ -52,7 +52,7 @@ contract DeployAllFactories is Script {
             timelockDelay: 1 days
         });
 
-        LarpcoinGameFactory factory = LarpcoinGameFactory(0x6115007e9FF5a691174743a68F7b4855Ca190074);
+        LarpcoinGameFactory factory = LarpcoinGameFactory(0xc7C57025aB47eAC2FCf6BD9a416Ab59916a9ff01);
         vm.startBroadcast();
         factory.build(lcArgs, gpArgs, lcGovArgs, gpGovArgs, 1460 /* 4 years in days */);
         vm.stopBroadcast();
