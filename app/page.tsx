@@ -71,6 +71,14 @@ export default function Home() {
                 </p>
               </div>
             </div>
+            <div className="card shadow-2xl">
+              <div className="card-body">
+                <h2 className="card-title">$CRAFT on Farcaster</h2>
+                <p>
+                  Join the conversation in the <a className="underline" target="_blank" href="https://warpcast.com/~/channel/crafters">/crafters channel on Farcaster</a>.
+                </p>
+              </div>
+            </div>
           </div>
           <div className="text-center italic my-4 underline">
             <p><a href="https://github.com/niran/larpcoin-toolkit">learn more about larpcoins</a></p>
