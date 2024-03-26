@@ -1,5 +1,6 @@
 "use client";
 import ConnectWalletButton from "./components/ConnectWalletButton";
+import DelegateButton from "./components/DelegateButton";
 import GamePieceCard from "./components/GamePieceCard";
 import LarpcoinBalance from "./components/LarpcoinBalance";
 import config from "./config";
@@ -61,6 +62,7 @@ export default function Home() {
                   the <a target="_blank" className="underline" href="https://www.tally.xyz/gov/crafters">House of Crafters</a> to
                   award $CRAFT from the stream. One player, one vote.
                 </p>
+                <DelegateButton governor="GamePiece" />
               </div>
             </div>
             <div className="card shadow-2xl">
@@ -70,6 +72,7 @@ export default function Home() {
                   The <a className="underline" target="_blank" href="https://www.tally.xyz/gov/future-crafters">House of Future Crafters</a> controls
                   settings like the cost of each Pickaxe. One $CRAFT, one vote.
                 </p>
+                <DelegateButton governor="Larpcoin" />
               </div>
             </div>
             <div className="card shadow-2xl">
