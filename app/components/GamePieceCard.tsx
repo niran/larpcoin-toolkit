@@ -60,11 +60,8 @@ export default function GamePieceCard() {
   const balance = result.data ? result.data[3].result as bigint: undefined;
   const roundLength = result.data ? result.data[4].result as bigint : undefined;
   let activeUntil;
-  if (playerRecord !== undefined && balance !== undefined && roundLength !== undefined) {
+  if (playerRecord !== undefined && balance !== undefined && roundLength !== undefined && balance > 0) {
     const usableBalance = balance - playerRecord[2];
-    console.log(usableBalance);
-    console.log(playerRecord);
-    console.log(roundLength);
     activeUntil = new Date(Number(playerRecord[1] + usableBalance * roundLength) * 1000);
   }
 
@@ -82,7 +79,8 @@ export default function GamePieceCard() {
           {cost !== undefined && `${cost} ${config.larpcoinName}`}
         </div>
         <div className="text-green-500">
-          {balance !== undefined && `You have ${balance} ${config.gamePieceName}${balance > 1 ? "s" : ""}. `}
+          {balance !== undefined && balance > 0 && `You have ${balance} ${config.gamePieceName}${balance > 1 ? "s" : ""}. `}
+          {balance !== undefined && Number(balance) === 0 && `You have no ${config.gamePieceName}s. `}
           {activeUntil !== undefined && `You will play until ${activeUntil.toDateString()}.`}
         </div>
       </form>
