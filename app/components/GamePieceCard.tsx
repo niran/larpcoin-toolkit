@@ -78,10 +78,15 @@ export default function GamePieceCard() {
         <div className="text-green-500">
           {cost !== undefined && `${cost} ${config.larpcoinName}`}
         </div>
-        <div className="text-green-500">
+        <div className="text-green-500 text-center">
           {balance !== undefined && balance > 0 && `You have ${balance} ${config.gamePieceName}${balance > 1 ? "s" : ""}. `}
           {balance !== undefined && Number(balance) === 0 && `You have no ${config.gamePieceName}s. `}
-          {activeUntil !== undefined && `You can play until ${activeUntil.toDateString()}.`}
+          {activeUntil !== undefined && (
+            <div>
+              <div>You can play until {activeUntil.toDateString()}!</div>
+              <div>Game rounds take place over the course of 30 days in the <a target="_blank" className="underline" href="https://warpcast.com/~/channel/crafters">/crafters channel on Farcaster</a>.</div>
+            </div>
+          )}
         </div>
       </form>
     </div>
