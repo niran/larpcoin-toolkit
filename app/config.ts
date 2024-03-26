@@ -1,6 +1,6 @@
 const config = {
-  larpcoinAddress: "0xba884d8065Ff800f1377679862905617cf28C6E5",
-  gamePieceAddress: "0x80D843046E899cC06B195CD0C0f553868c3ea28A",
+  larpcoinAddress: "0xAAb56a449B0345ec064cACcF161E06613437BC83",
+  gamePieceAddress: "0xff6A81c28d5D46d36348A60A402972aF5e0E43C0",
   larpcoinName: "$CRAFT",
   gamePieceName: "Pickaxe",
   uniswapChain: "sepolia",
