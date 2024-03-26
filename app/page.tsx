@@ -57,8 +57,9 @@ export default function Home() {
                 <h2 className="card-title">Give $CRAFT</h2>
                 <p>
                   Find great builders and make sure they get the $CRAFT they need to play with us.
-                  You can give out your own $CRAFT or vote in the House of Crafters to award $CRAFT
-                  from the stream. One player, one vote.
+                  You can give out your own $CRAFT or vote in
+                  the <a target="_blank" className="underline" href="https://www.tally.xyz/gov/crafters">House of Crafters</a> to
+                  award $CRAFT from the stream. One player, one vote.
                 </p>
               </div>
             </div>
@@ -66,8 +67,8 @@ export default function Home() {
               <div className="card-body">
                 <h2 className="card-title">Configure the Game</h2>
                 <p>
-                  The House of Future Crafters controls settings like the cost of each Pickaxe.
-                  One $CRAFT, one vote.
+                  The <a className="underline" target="_blank" href="https://www.tally.xyz/gov/future-crafters">House of Future Crafters</a> controls
+                  settings like the cost of each Pickaxe. One $CRAFT, one vote.
                 </p>
               </div>
             </div>
