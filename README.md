@@ -96,7 +96,6 @@ You should rename the houses to fit with the lore of your larpcoin!
 
 ## Tools
 
-* [**Base**](https://www.base.org/): Larpcoins play well on Base because the fees are super low, it's easy to onboard new players, and it has access to [Coinbase Onchain Verifications](https://github.com/coinbase/verifications), which will make it easier for you to enforce one player, one vote.
 * [**Snapshot**](https://snapshot.org/): Snapshot is the polling tool players use to gauge sentiment on upcoming issues.
 * [**Tally**](https://www.tally.xyz/): Tally is the tool larpcoin players use to make binding decisions together onchain.
 * [**Governor**](https://docs.tally.xyz/knowledge-base/tally/governor-framework): Larpcoins are built with Governor contracts, which makes them compatible with Tally.
