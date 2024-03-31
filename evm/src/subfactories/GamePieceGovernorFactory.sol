@@ -2,6 +2,8 @@
 pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/governance/TimelockController.sol";
+import "@openzeppelin/contracts/governance/utils/IVotes.sol";
+
 
 import {TimelockControllerFactory} from "./TimelockControllerFactory.sol";
 import {SlowlockFactory} from "./SlowlockFactory.sol";
@@ -32,7 +34,7 @@ contract GamePieceGovernorFactory {
         gpFactory = GamePieceFactory(_gpFactory);
     }
 
-function build(GamePieceArgs memory gpArgs, GovernanceArgs memory govArgs, address larpcoin, address lcTimelock, uint256 halfLifeDays) public returns (GamePieceContracts memory) {
+    function build(GamePieceArgs memory gpArgs, GovernanceArgs memory govArgs, address larpcoin, address lcTimelock, uint256 halfLifeDays) public returns (GamePieceContracts memory) {
         GamePieceContracts memory gpc;
         gpc.timelock = tcFactory.build(govArgs.timelockDelay);
         gpc.slowlock = slowlockFactory.build(lcTimelock, address(gpc.timelock), larpcoin, halfLifeDays);
@@ -44,5 +46,15 @@ function build(GamePieceArgs memory gpArgs, GovernanceArgs memory govArgs, addre
         gpc.timelock.revokeRole(gpc.timelock.DEFAULT_ADMIN_ROLE(), address(this));
 
         return gpc;
+    }
+
+    function buildSimple(IVotes nft, GovernanceArgs memory govArgs) public returns (GamePieceGovernor, TimelockController) {
+        TimelockController timelock = tcFactory.build(govArgs.timelockDelay);
+        GamePieceGovernor gov = new GamePieceGovernor(nft, timelock, govArgs.votingDelay, govArgs.votingPeriod, govArgs.proposalThreshold);
+        timelock.grantRole(timelock.PROPOSER_ROLE(), address(gov));
+        timelock.grantRole(timelock.CANCELLER_ROLE(), address(gov));
+        timelock.revokeRole(timelock.DEFAULT_ADMIN_ROLE(), address(this));
+
+        return (gov, timelock);
     }
 }
