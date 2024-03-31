@@ -9,7 +9,26 @@ Since memecoins themselves are already like a game, that means there are two way
 
 `larpcoin-toolkit` contains everything you need to start your own larpcoin. Time is of the essence, gamemaster. You must hurry up and start your game! But make sure you're prepared for the power these games will have on you...
 
-## Objectives
+## If You Already Have a Memecoin...
+
+...then let's cut to the chase. Your community needs to *mint NFTs with your memecoin*, and they need to do it over and over again. This repository contains tools to help you do that.
+
+1. Use Zora to mint NFTs [using your memecoin as payment](https://support.zora.co/en/articles/9118971-creating-and-minting-with-erc-20-tokens). Part of the payment can go to the artist, and the rest should go to a community-controlled wallet.
+2. Deploy a `PieceCollector` contract that gives a voting membership NFT to anyone who has minted one of the listed NFTs you provide to the contract.
+3. Deploy and set up an NFT Governor (like this repository's `GamePieceGovernor`) in Tally, which creates a wallet that minters control by voting. One minter, one vote.
+4. Deploy the membership status web app from this repository to Vercel.
+
+Now the collectors in your community can choose which NFTs grant membership status, and they can vote on proposals to change the list. You can even make the minting proceeds flow to this new minter-controlled wallet, so the people who mint get to control the funds directly!
+
+Other than choosing which NFTs count for membership, there are two imporant settings to configure: the `roundLength` for each round of membership, and the `cost` to set the number of your memecoins you want members to spend each round. Memberships expire at the end of each round, so members mint new NFTs each round to keep playing.
+
+That's all you need to get started! Once you've got that going, you can read the rest of this and consider using a `Slowlock` for any portion of your coin supply that hasn't been distributed. This kind of system works best when coins are flowing out of a Slowlock while minters are putting coins back in.
+
+## If You're Considering a Memecoin...
+
+...then you should make it a larpcoin from day one. Instead of trying to convince your community to start minting NFTs with your memecoin, they'll start off knowing how minting fits in your game. Here's how larpcoins work.
+
+### Objectives
 
 The core objective of any larpcoin is to get as many people to play as possible. But beware, gamemaster: a larpcoin with growth as its only objective will never be fun enough to grow! The gamemaster's job is to start a game worth growing, and to make sure the players who join are well-equipped to make the game their own.
 
@@ -17,11 +36,11 @@ To start playing with a memecoin, you buy it. That works with a larpcoin too, bu
 
 The way the gamemaster starts the game is crucial. Your choices must inspire your players to play well. What will you call your game and what imagery will you use? When you buy your own larpcoins, who will you give them away to and why? When your work is done, the hope is that your players get as much joy from being promoted to gamemaster as you get from being promoted to player.
 
-## Gameplay
+### Gameplay
 
 There are two gameplay modes for larpcoins: player versus environment (PvE) and player versus player (PvP).
 
-### PvE
+#### PvE
 
 In PvE mode, all larpcoin players are working together to achieve the objectives. They succeed together and fail together.
 
@@ -32,7 +51,7 @@ In PvE mode, all larpcoin players are working together to achieve the objectives
 * The Legend of Zelda
 * Final Fantasy
 
-### PvP
+#### PvP
 
 In PvP mode, larpcoin players are separated into factions that compete against each other to achieve the objectives. Each faction has its own goalposts, and their score increases each time their faction's NFTs are minted.
 
@@ -48,13 +67,13 @@ For some larpcoins, it makes sense for players to choose their own faction. For 
 * The Olympics (Nations)
 * [Crypto: The Game](https://www.cryptothegame.com/) (Tribes, battle royale)
 
-## Distribution
+### Distribution
 
 A typical memecoin creator mints the entire fixed supply to an account and puts the rest in a liquidity pool. (The creator usually keeps some of the initial supply, but that's lame.)
 
 A typical larpcoin gamemaster mints the entire fixed supply to an account. From there, they put half in a liquidity pool and half in a slowlock. The larpcoin players will control the coins in the slowlock. The gamemaster keeps nothing, and and often gives away larpcoins from the first purchases from the liquidity pool.
 
-## Streaming from the Slowlock
+### Streaming from the Slowlock
 
 The slowlock is like a timelock, but it streams larpcoins slowly forever. The stream lasts forever because it keeps slowing down as it drains. The gamemaster chooses a half-life time period for the slowlock, and every time that period passes, half of the remaining larpcoins will have been streamed. Larpcoins are continually streamed every second.
 
@@ -65,7 +84,7 @@ The ideal configuration for a slowlock is not yet understood, but here are some 
 * **Four years**: Bitcoin's half life is four years. If it's good enough for Bitcoin, maybe it's good enough for your larpcoin?
 * **One year**: In most memecoins, the 50% of the supply devoted to liquidity usually circulates very quickly with a small portion remaining in Uniswap. With a half life of one year, it'll take a year for the slowlock to dilute that by half (25% of the total supply). Maybe that's conservative enough.
 
-## Minting
+### Minting
 
 The gamemaster sets an initial larpcoin-denominated cost for the game piece NFT and the length of one round. One game piece expires at the end of each round for each player. Users swap for the larpcoins they need, then mint their game piece. The NFT contract deposits incoming larpcoins into the slowlock, where they will be slowly streamed over time for the players to control together.
 
@@ -73,7 +92,7 @@ Game piece NFTs can be transferred without any restrictions until the player reg
 
 Game piece NFTs are open editions: the supply is limited by time. The current generation of game pieces can be locked to disable further minting, and players continue the game with a new game piece NFT contract. Once the new game piece is active, the old piece can become a scarce collectible with no transfer restrictions.
 
-## Choosing the Initial Mint Cost
+### Choosing the Initial Mint Cost
 
 Since you're creating a larpcoin from thin air, the larpcoin cost of your game pieces can feel like an arbitrary number. **It's not arbitrary.** It determines how easy it is to play your game. You don't want it to be too easy or too hard, but it's better for the game to start too hard and adjust over time.
 
@@ -85,7 +104,7 @@ On the other end of the spectrum, a game piece cost of 100 larpcoins for a game 
 
 Estimate the number of players you expect and how often it makes sense to earn rewards in your game, then choose an initial game piece cost that fits your game. Your players will adjust the cost from there.
 
-## Player Control
+### Player Control
 
 Once the gamemaster starts the game, the players become the gamemaster and control the game together. Here's the simplest setup that should work for most games:
 
@@ -94,7 +113,7 @@ Once the gamemaster starts the game, the players become the gamemaster and contr
 
 You should rename the houses to fit with the lore of your larpcoin!
 
-## Tools
+### Tools
 
 * [**Snapshot**](https://snapshot.org/): Snapshot is the polling tool players use to gauge sentiment on upcoming issues.
 * [**Tally**](https://www.tally.xyz/): Tally is the tool larpcoin players use to make binding decisions together onchain.
@@ -102,7 +121,7 @@ You should rename the houses to fit with the lore of your larpcoin!
 * [**Uniswap**](https://uniswap.org/): Uniswap v3's [single-sided liquidity](https://support.uniswap.org/hc/en-us/articles/20902968738317-What-is-single-sided-liquidity) allows the larpcoin to provide its own initial liquidity without any ETH.
 * [**Party**](https://www.party.app/): If you use Party to launch your larpcoin, you can avoid some of the pitfalls of typical memecoins. The early participants often end up with a huge portion of the token supply, which makes the whole game very ruggable. If you "fair launch" your larpcoin by [splitting the early token supply with several people](https://twitter.com/john_c_palmer/status/1769179600502833569), it might be less ruggable.
 
-## FAQ
+### FAQ
 
 * **Do larpcoins have a fixed supply?** Yes. The entire supply of a larpcoin is created on day one. The larpcoins spent by the House of Players aren't *new* tokens, they're tokens that have been freshly streamed from the slowlock.
 * **Does "one person, one vote" actually work onchain?** Not really! Someone can create a whole bunch of accounts, mint a bunch of game piece NFTs, and gain control of the House of Players. But it's not worth worrying about this until your players have proved that your larpcoin is worth playing. Once it is, there are a few ways you can make it more resilient:
