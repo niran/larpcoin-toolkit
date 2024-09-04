@@ -38,6 +38,14 @@ contract GamePieceGovernorTest is Test, SwapsForLarpcoins {
         LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory(address(tcFactory));
         GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory), address(slowlockFactory), address(gpFactory));
         factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
+
+        vm.makePersistent(address(lcFactory));
+        vm.makePersistent(address(tcFactory));
+        vm.makePersistent(address(slowlockFactory));
+        vm.makePersistent(address(gpFactory));
+        vm.makePersistent(address(lcGovFactory));
+        vm.makePersistent(address(gpGovFactory));
+        vm.makePersistent(address(factory));
     }
 
     function buildContracts() internal returns (LarpcoinContracts memory) {
@@ -120,6 +128,7 @@ contract GamePieceGovernorTest is Test, SwapsForLarpcoins {
     }
 
     function testGPGovCanPassProposals() public {
+        vm.createSelectFork("https://ethereum-sepolia-rpc.publicnode.com");
         LarpcoinContracts memory c = buildContracts();
         swapForLarpcoins(address(c.larpcoin));
         vm.warp(block.timestamp + 365 days * 4);

@@ -38,6 +38,15 @@ contract LarpcoinGovernorTest is Test, SwapsForLarpcoins {
         LarpcoinGovernorFactory lcGovFactory = new LarpcoinGovernorFactory(address(tcFactory));
         GamePieceGovernorFactory gpGovFactory = new GamePieceGovernorFactory(address(tcFactory), address(slowlockFactory), address(gpFactory));
         factory = new LarpcoinGameFactory(address(lcFactory), address(lcGovFactory), address(gpGovFactory));
+
+
+        vm.makePersistent(address(lcFactory));
+        vm.makePersistent(address(tcFactory));
+        vm.makePersistent(address(slowlockFactory));
+        vm.makePersistent(address(gpFactory));
+        vm.makePersistent(address(lcGovFactory));
+        vm.makePersistent(address(gpGovFactory));
+        vm.makePersistent(address(factory));
     }
 
     function buildContracts() internal returns (LarpcoinContracts memory) {
@@ -112,6 +121,7 @@ contract LarpcoinGovernorTest is Test, SwapsForLarpcoins {
     }
 
     function testLCGovCanPassProposals() public {
+        vm.createSelectFork("https://ethereum-sepolia-rpc.publicnode.com");
         LarpcoinContracts memory c = buildContracts();
         swapForLarpcoins(address(c.larpcoin));
         executeViaLCGov(c, address(c.piece), 0, abi.encodeCall(c.piece.setName, ("NEWNAME")), "Change the name of the GamePiece to NEWNAME");

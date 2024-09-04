@@ -37,6 +37,7 @@ contract LarpcoinGameFactoryTest is Test {
     address public WETH9 = 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14;
 
     function setUp() public {
+        vm.createSelectFork("https://ethereum-sepolia-rpc.publicnode.com");
         LarpcoinFactory lcFactory = new LarpcoinFactory(
             0x1238536071E1c677A632429e3655c799b22cDA52,
             0x0227628f3F023bb0B980b67D528571c95c6DaC1c,
